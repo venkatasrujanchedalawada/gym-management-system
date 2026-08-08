@@ -208,12 +208,21 @@
 
             <div class="card">
 
-                <h2>📅 Attendance</h2>
+                 <h2>📅 Attendance</h2>
 
-                <p class="empty">
-                    Attendance will appear here once the
-                    gym's attendance system is connected.
-                </p>
+                 <p class="info">
+                     Days Present:
+                     <strong id="attendanceCount">0</strong>
+                 </p>
+
+                 <p class="info">
+                      This Month:
+                       <strong id="attendanceMonth">-</strong>
+                 </p>
+
+                 <div id="attendanceList">
+                      <p class="empty">Loading attendance...</p>
+                  </div>
 
             </div>
 
@@ -398,6 +407,50 @@
                 statusElement.style.background = "#3b1818";
                 statusElement.style.color = "#ff7777";
             }
+            // Load attendance
+
+const { data: attendance, error: attendanceError } =
+    await supabaseClient
+        .from("attendance")
+        .select("attendance_date, attendance_time")
+        .eq("member_id", member.member_id)
+        .order("attendance_date", { ascending: false });
+
+
+if (attendanceError) {
+
+    console.error(attendanceError);
+
+} else {
+
+    const attendanceCount =
+        document.getElementById("attendanceCount");
+
+    const attendanceList =
+        document.getElementById("attendanceList");
+
+    attendanceCount.textContent = attendance.length;
+
+
+    if (attendance.length === 0) {
+
+        attendanceList.innerHTML =
+            "<p class='empty'>No attendance records yet.</p>";
+
+    } else {
+
+        attendanceList.innerHTML = attendance
+            .map(record => `
+                <p class="info">
+                    ✅ ${record.attendance_date}
+                    ${record.attendance_time
+                        ? " — " + record.attendance_time
+                        : ""}
+                </p>
+            `)
+            .join("");
+    }
+}
 
 
             // Personal trainer
