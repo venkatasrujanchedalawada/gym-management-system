@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AV Fitness | Member Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #0b0b0b;
+            color: white;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: #111;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #ff3b30;
+        }
+
+        #logoutBtn {
+            border: none;
+            background: #ff3b30;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        main {
+            padding: 40px 8%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .welcome {
+            margin-bottom: 35px;
+        }
+
+        .welcome h1 {
+            font-size: 38px;
+        }
+
+        .welcome p {
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #151515;
+            border: 1px solid #292929;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+        }
+
+        .info {
+            margin: 10px 0;
+            color: #ccc;
+        }
+
+        .info strong {
+            color: white;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #183c22;
+            color: #72e58a;
+            font-size: 13px;
+        }
+
+        .locked {
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .upgrade {
+            display: inline-block;
+            padding: 11px 18px;
+            background: #ff3b30;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .empty {
+            color: #888;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 60px;
+            color: #aaa;
+        }
+
+        #dashboard {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+
+        <div class="logo">
+            AV <span>FITNESS</span>
+        </div>
+
+        <button id="logoutBtn">
+            Logout
+        </button>
+
+    </nav>
+
+
+    <div id="loading">
+        Loading your dashboard...
+    </div>
+
+
+    <main id="dashboard">
+
+        <div class="welcome">
+            <h1>Welcome, <span id="memberName">Member</span> 👋</h1>
+            <p>Your AV Fitness member dashboard</p>
+        </div>
+
+
+        <div class="grid">
+
+            <!-- PROFILE -->
+
+            <div class="card">
+
+                <h2>👤 My Profile</h2>
+
+                <p class="info">
+                    Name:
+                    <strong id="profileName">-</strong>
+                </p>
+
+                <p class="info">
+                    Email:
+                    <strong id="profileEmail">-</strong>
+                </p>
+
+                <p class="info">
+                    Phone:
+                    <strong id="profilePhone">-</strong>
+                </p>
+
+                <p class="info">
+                    Membership:
+                    <strong id="membershipType">-</strong>
+                </p>
+
+                <p class="info">
+                    Expires:
+                    <strong id="membershipEnd">-</strong>
+                </p>
+
+                <p class="info">
+                    Status:
+                    <span class="status" id="membershipStatus">
+                        Active
+                    </span>
+                </p>
+
+            </div>
+
+
+            <!-- ATTENDANCE -->
+
+            <div class="card">
+
+                <h2>📅 Attendance</h2>
+
+                <p class="empty">
+                    Attendance will appear here once the
+                    gym's attendance system is connected.
+                </p>
+
+            </div>
+
+
+            <!-- WORKOUT -->
+
+            <div class="card">
+
+                <h2>🏋️ Today's Workout</h2>
+
+                <div id="workoutContent">
+
+                    <p class="locked">
+                        🔒 Personalized workout plans are
+                        available with a personal trainer.
+                    </p>
+
+                    <a href="#" class="upgrade">
+                        Upgrade to Personal Trainer
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- DIET -->
+
+            <div class="card">
+
+                <h2>🥗 Today's Diet</h2>
+
+                <div id="dietContent">
+
+                    <p class="locked">
+                        🔒 Personalized diet plans are
+                        available with a personal trainer.
+                    </p>
+
+                    <a href="#" class="upgrade">
+                        Upgrade to Personal Trainer
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- TRAINER -->
+
+            <div class="card">
+
+                <h2>👨‍🏫 Personal Trainer</h2>
+
+                <div id="trainerContent">
+
+                    <p class="locked">
+                        You currently don't have a
+                        personal trainer.
+                    </p>
+
+                    <a href="#" class="upgrade">
+                        Upgrade to Personal Trainer
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        const SUPABASE_URL = "https://hwcvzgnldnnvpzqaprmr.supabase.co";
+        const SUPABASE_KEY = "sb_publishable__p2vDp05-aQKlAjGbp8vqw_7c9fyHtK";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        async function loadDashboard() {
+
+            // Check login
+
+            const {
+                data: { user },
+                error: authError
+            } = await supabaseClient.auth.getUser();
+
+
+            if (authError || !user) {
+
+                window.location.href = "login.html";
+
+                return;
+            }
+
+
+            // Get member profile
+
+            const {
+                data: member,
+                error: memberError
+            } = await supabaseClient
+                .from("members")
+                .select(`
+                    member_id,
+                    name,
+                    email,
+                    phone,
+                    membership_type,
+                    membership_end,
+                    trainer_id
+                `)
+                .eq("user_id", user.id)
+                .single();
+
+
+            if (memberError) {
+
+                document.getElementById("loading").textContent =
+                    "Unable to load member profile.";
+
+                console.error(memberError);
+
+                return;
+            }
+
+
+            // Show dashboard
+
+            document.getElementById("loading").style.display =
+                "none";
+
+            document.getElementById("dashboard").style.display =
+                "block";
+
+
+            // Profile
+
+            document.getElementById("memberName").textContent =
+                member.name;
+
+            document.getElementById("profileName").textContent =
+                member.name;
+
+            document.getElementById("profileEmail").textContent =
+                member.email;
+
+            document.getElementById("profilePhone").textContent =
+                member.phone || "-";
+
+            document.getElementById("membershipType").textContent =
+                member.membership_type;
+
+            document.getElementById("membershipEnd").textContent =
+                member.membership_end;
+
+
+            // Membership status
+
+            const today = new Date();
+            const expiry = new Date(member.membership_end);
+
+            const statusElement =
+                document.getElementById("membershipStatus");
+
+
+            if (expiry >= today) {
+
+                statusElement.textContent = "Active";
+
+            } else {
+
+                statusElement.textContent = "Expired";
+                statusElement.style.background = "#3b1818";
+                statusElement.style.color = "#ff7777";
+            }
+
+
+            // Personal trainer
+
+            if (member.trainer_id !== null) {
+
+                document.getElementById("trainerContent").innerHTML = `
+                    <p>
+                        You have a personal trainer assigned.
+                    </p>
+                `;
+
+                document.getElementById("workoutContent").innerHTML = `
+                    <p>
+                        Your personalized workout plan
+                        will appear here.
+                    </p>
+                `;
+
+                document.getElementById("dietContent").innerHTML = `
+                    <p>
+                        Your personalized diet plan
+                        will appear here.
+                    </p>
+                `;
+
+            }
+
+        }
+
+
+        // Logout
+
+        document.getElementById("logoutBtn")
+            .addEventListener("click", async function() {
+
+                await supabaseClient.auth.signOut();
+
+                window.location.href = "login.html";
+
+            });
+
+
+        loadDashboard();
+
+    </script>
+
+</body>
+</html>
