@@ -1,1 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>AV Fitness | Get Fit. Don't Quit.</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #0b0b0b;
+            color: white;
+            line-height: 1.6;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: #111;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #ff3b30;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: #ff3b30;
+        }
+
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            background:
+                linear-gradient(rgba(0,0,0,.65), rgba(0,0,0,.8)),
+                radial-gradient(circle at center, #333, #050505);
+        }
+
+        .hero h1 {
+            font-size: clamp(45px, 8vw, 90px);
+            font-weight: 900;
+        }
+
+        .hero h1 span {
+            color: #ff3b30;
+        }
+
+        .hero p {
+            font-size: 22px;
+            margin: 20px 0 30px;
+            color: #ddd;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 30px;
+            background: #ff3b30;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: .3s;
+        }
+
+        .btn:hover {
+            background: #ff6259;
+            transform: translateY(-2px);
+        }
+
+        section {
+            padding: 80px 8%;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 40px;
+            margin-bottom: 45px;
+        }
+
+        .section-title span {
+            color: #ff3b30;
+        }
+
+        .about {
+            max-width: 900px;
+            margin: auto;
+            text-align: center;
+            color: #ccc;
+            font-size: 18px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: #151515;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #252525;
+            transition: .3s;
+        }
+
+        .card:hover {
+            transform: translateY(-7px);
+            border-color: #ff3b30;
+        }
+
+        .card h3 {
+            margin: 15px 0 10px;
+            font-size: 22px;
+        }
+
+        .card p {
+            color: #aaa;
+        }
+
+        .icon {
+            font-size: 45px;
+        }
+
+        .price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ff3b30;
+            margin: 15px 0;
+        }
+
+        .pricing {
+            background: #101010;
+        }
+
+        .contact {
+            text-align: center;
+        }
+
+        .contact p {
+            margin: 10px 0;
+            color: #ccc;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: #050505;
+            color: #777;
+        }
+
+        @media (max-width: 700px) {
+            nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav a {
+                margin: 0 8px;
+                font-size: 14px;
+            }
+
+            section {
+                padding: 60px 6%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">AV <span>FITNESS</span></div>
+
+        <div>
+            <a href="#about">About</a>
+            <a href="#trainers">Trainers</a>
+            <a href="#plans">Plans</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div>
+            <h1>AV <span>FITNESS</span></h1>
+
+            <p>Get Fit. Don't Quit.</p>
+
+            <a href="#plans" class="btn">View Memberships</a>
+        </div>
+    </section>
+
+    <section id="about">
+        <h2 class="section-title">About <span>AV Fitness</span></h2>
+
+        <div class="about">
+            <p>
+                Welcome to AV Fitness, a modern fitness destination in Chennai.
+                Our goal is simple — help you become stronger, healthier and
+                more confident with the right environment, guidance and consistency.
+            </p>
+        </div>
+    </section>
+
+    <section id="trainers">
+        <h2 class="section-title">Our <span>Trainers</span></h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="icon">🏋️</div>
+                <h3>Trainer Name</h3>
+                <p>Strength & Conditioning</p>
+            </div>
+
+            <div class="card">
+                <div class="icon">💪</div>
+                <h3>Trainer Name</h3>
+                <p>Muscle Building & Fitness</p>
+            </div>
+
+            <div class="card">
+                <div class="icon">🔥</div>
+                <h3>Trainer Name</h3>
+                <p>Weight Training & Conditioning</p>
+            </div>
+
+        </div>
+    </section>
+
+    <section>
+        <h2 class="section-title">Why <span>Choose Us?</span></h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="icon">🏋️</div>
+                <h3>Modern Equipment</h3>
+                <p>Quality equipment for effective workouts.</p>
+            </div>
+
+            <div class="card">
+                <div class="icon">👨‍🏫</div>
+                <h3>Expert Trainers</h3>
+                <p>Get guidance from experienced trainers.</p>
+            </div>
+
+            <div class="card">
+                <div class="icon">⚡</div>
+                <h3>Energetic Environment</h3>
+                <p>A motivating environment to keep you moving.</p>
+            </div>
+
+            <div class="card">
+                <div class="icon">🎯</div>
+                <h3>Goal Focused</h3>
+                <p>Train consistently and work towards your goals.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="plans" class="pricing">
+        <h2 class="section-title">Membership <span>Plans</span></h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Monthly</h3>
+                <div class="price">₹1,499</div>
+                <p>1 Month Membership</p>
+            </div>
+
+            <div class="card">
+                <h3>Quarterly</h3>
+                <div class="price">₹2,999</div>
+                <p>3 Month Membership</p>
+            </div>
+
+            <div class="card">
+                <h3>Annual</h3>
+                <div class="price">₹6,999</div>
+                <p>12 Month Membership</p>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+
+        <h2 class="section-title">Contact <span>Us</span></h2>
+
+        <p>📍 Chennai, Tamil Nadu</p>
+        <p>📞 9999999999</p>
+
+        <br>
+
+        <a href="tel:9999999999" class="btn">
+            Call AV Fitness
+        </a>
+
+    </section>
+
+    <footer>
+        © 2026 AV Fitness. All Rights Reserved.
+    </footer>
+
+</body>
+</html>
