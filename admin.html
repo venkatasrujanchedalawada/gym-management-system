@@ -159,6 +159,39 @@
                 align-items: flex-start;
             }
         }
+        #membershipForm {
+    display: grid;
+    gap: 10px;
+}
+
+#membershipForm label {
+    color: #ccc;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+#membershipForm input,
+#membershipForm select {
+    width: 100%;
+    padding: 12px;
+
+    background: #0d0d0d;
+    color: white;
+
+    border: 1px solid #333;
+    border-radius: 7px;
+}
+
+#membershipForm input:focus,
+#membershipForm select:focus {
+    outline: none;
+    border-color: #ff3b30;
+}
+
+#billingMessage {
+    margin-top: 10px;
+    color: #aaa;
+}
     </style>
 </head>
 
@@ -258,26 +291,122 @@
 
     </div>
 
+<!-- BILLING -->
 
-    <!-- BILLING -->
+<div class="section">
 
-    <div class="section">
+    <div class="section-header">
 
-        <div class="section-header">
-
-            <h2>💳 Billing</h2>
-
-            <button id="billingBtn">
-                + New Membership
-            </button>
-
-        </div>
-
-        <p class="empty">
-            Membership billing will be connected here next.
-        </p>
+        <h2>💳 New Membership</h2>
 
     </div>
+
+    <form id="membershipForm">
+
+        <label>Name</label>
+
+        <input
+            type="text"
+            id="memberName"
+            placeholder="Member name"
+            required
+        >
+
+        <label>Email</label>
+
+        <input
+            type="email"
+            id="memberEmail"
+            placeholder="Member email"
+            required
+        >
+
+        <label>Phone</label>
+
+        <input
+            type="tel"
+            id="memberPhone"
+            placeholder="Phone number"
+            required
+        >
+
+        <label>Membership Package</label>
+
+        <select id="membershipType" required>
+
+            <option value="">
+                Select package
+            </option>
+
+            <option
+                value="Monthly"
+                data-price="1499"
+            >
+                Monthly — ₹1,499
+            </option>
+
+            <option
+                value="Quarterly"
+                data-price="2999"
+            >
+                Quarterly — ₹2,999
+            </option>
+
+            <option
+                value="Annual"
+                data-price="6999"
+            >
+                Annual — ₹6,999
+            </option>
+
+        </select>
+
+        <label>Payment Method</label>
+
+        <select id="paymentMethod" required>
+
+            <option value="">
+                Select payment method
+            </option>
+
+            <option value="UPI">
+                UPI
+            </option>
+
+            <option value="Cash">
+                Cash
+            </option>
+
+            <option value="Card">
+                Card
+            </option>
+
+            <option value="Bank Transfer">
+                Bank Transfer
+            </option>
+
+        </select>
+
+        <label>Amount</label>
+
+        <input
+            type="number"
+            id="paymentAmount"
+            placeholder="Amount"
+            min="0"
+            step="0.01"
+            required
+        >
+
+        <button type="submit">
+            Create Membership
+        </button>
+
+        <p id="billingMessage"></p>
+
+    </form>
+
+</div>
 
 
     <!-- TRAINERS -->
@@ -515,7 +644,51 @@ document.getElementById("logoutBtn")
 
     });
 
+const membershipType =
+    document.getElementById("membershipType");
 
+const paymentAmount =
+    document.getElementById("paymentAmount");
+
+
+membershipType.addEventListener(
+    "change",
+    function() {
+
+        const selected =
+            membershipType.options[
+                membershipType.selectedIndex
+            ];
+
+        const price =
+            selected.dataset.price;
+
+        if (price) {
+            paymentAmount.value = price;
+        } else {
+            paymentAmount.value = "";
+        }
+
+    }
+);
+const membershipForm =
+    document.getElementById("membershipForm");
+
+
+membershipForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+        const billingMessage =
+            document.getElementById("billingMessage");
+
+        billingMessage.textContent =
+            "Billing form is ready. Database creation will be connected next.";
+
+    }
+);    
 loadAdminDashboard();
 
 </script>
