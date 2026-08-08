@@ -204,13 +204,25 @@ const {
 
 if (roleError) {
 
-    console.error(roleError);
+    console.error("ROLE ERROR:", roleError);
+
     message.textContent =
-        "Unable to determine account type.";
+        "Role error: " + roleError.message;
 
     return;
 }
 
+if (!role) {
+
+    console.log("No role found for this user.");
+
+    message.textContent =
+        "No role found for this account.";
+
+    return;
+}
+
+console.log("Logged in user role:", role.role);
 
 if (role && role.role === "admin") {
 
