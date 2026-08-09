@@ -1,1406 +1,356 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>AV Fitness | Admin</title>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #0b0b0b;
-            color: #ffffff;
-        }
-
-        /* SIDEBAR */
-
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-
-            width: 250px;
-            height: 100vh;
-
-            background: #111111;
-            border-right: 1px solid #292929;
-
-            padding: 25px 15px;
-
-            z-index: 100;
-        }
-
-        .logo {
-            font-size: 25px;
-            font-weight: bold;
-
-            padding: 0 15px 30px;
-        }
-
-        .logo span {
-            color: #ff3b30;
-        }
-
-        .nav-button {
-            width: 100%;
-
-            display: flex;
-            align-items: center;
-
-            gap: 12px;
-
-            padding: 13px 15px;
-
-            margin-bottom: 6px;
-
-            background: transparent;
-            color: #aaa;
-
-            border: none;
-            border-radius: 8px;
-
-            cursor: pointer;
-
-            font-size: 15px;
-            text-align: left;
-        }
-
-        .nav-button:hover {
-            background: #1d1d1d;
-            color: white;
-        }
-
-        .nav-button.active {
-            background: #ff3b30;
-            color: white;
-        }
-
-        .logout {
-            position: absolute;
-
-            bottom: 25px;
-            left: 15px;
-
-            width: calc(100% - 30px);
-
-            background: #1d1d1d;
-        }
-
-        /* MAIN */
-
-        .main {
-            margin-left: 250px;
-
-            min-height: 100vh;
-
-            padding: 35px;
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .page-header {
-            margin-bottom: 30px;
-        }
-
-        .page-header h1 {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        .page-header p {
-            color: #888;
-        }
-
-        /* CARDS */
-
-        .stats {
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(200px, 1fr));
-
-            gap: 18px;
-
-            margin-bottom: 25px;
-        }
-
-        .card {
-            background: #151515;
-
-            border: 1px solid #292929;
-            border-radius: 12px;
-
-            padding: 22px;
-        }
-
-        .card-title {
-            color: #888;
-
-            font-size: 14px;
-
-            margin-bottom: 10px;
-        }
-
-        .card-value {
-            font-size: 30px;
-            font-weight: bold;
-        }
-
-        /* SECTION */
-
-        .section {
-            background: #151515;
-
-            border: 1px solid #292929;
-
-            border-radius: 12px;
-
-            padding: 25px;
-
-            margin-bottom: 25px;
-        }
-
-        .section-header {
-            display: flex;
-
-            justify-content: space-between;
-            align-items: center;
-
-            margin-bottom: 20px;
-        }
-
-        .section-header h2 {
-            font-size: 20px;
-        }
-
-        /* BUTTONS */
-
-        .primary {
-            background: #ff3b30;
-            color: white;
-
-            border: none;
-
-            border-radius: 7px;
-
-            padding: 11px 18px;
-
-            cursor: pointer;
-
-            font-weight: bold;
-        }
-
-        .secondary {
-            background: #222;
-            color: white;
-
-            border: 1px solid #333;
-
-            border-radius: 7px;
-
-            padding: 11px 18px;
-
-            cursor: pointer;
-        }
-
-        /* TABLE */
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-
-            border-collapse: collapse;
-
-            min-width: 700px;
-        }
-
-        th,
-        td {
-            padding: 14px;
-
-            border-bottom: 1px solid #292929;
-
-            text-align: left;
-        }
-
-        th {
-            color: #888;
-
-            font-size: 13px;
-        }
-
-        td {
-            color: #ddd;
-        }
-
-        /* FORM */
-
-        .form-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
-
-            gap: 18px;
-        }
-
-        .form-group {
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 7px;
-        }
-
-        .full {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            color: #aaa;
-
-            font-size: 14px;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-
-            padding: 13px;
-
-            background: #0d0d0d;
-
-            color: white;
-
-            border: 1px solid #333;
-
-            border-radius: 7px;
-
-            font-size: 15px;
-        }
-
-        textarea {
-            min-height: 100px;
-
-            resize: vertical;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-
-            border-color: #ff3b30;
-        }
-
-        /* BADGES */
-
-        .badge {
-            display: inline-block;
-
-            padding: 5px 9px;
-
-            border-radius: 20px;
-
-            font-size: 12px;
-        }
-
-        .badge-active {
-            background: #173d24;
-
-            color: #69df8a;
-        }
-
-        .badge-expired {
-            background: #3d1717;
-
-            color: #ff7777;
-        }
-
-        /* EMPTY */
-
-        .empty {
-            text-align: center;
-
-            padding: 45px 20px;
-
-            color: #777;
-        }
-
-        /* MOBILE */
-
-        .mobile-header {
-            display: none;
-        }
-
-        @media (max-width: 800px) {
-
-            .sidebar {
-                width: 220px;
-            }
-
-            .main {
-                margin-left: 220px;
-
-                padding: 25px;
-            }
-
-        }
-
-        @media (max-width: 650px) {
-
-            .sidebar {
-                display: none;
-            }
-
-            .mobile-header {
-                display: flex;
-
-                position: sticky;
-
-                top: 0;
-
-                z-index: 100;
-
-                background: #111;
-
-                padding: 15px;
-
-                justify-content: space-between;
-
-                align-items: center;
-
-                border-bottom: 1px solid #292929;
-            }
-
-            .main {
-                margin-left: 0;
-
-                padding: 20px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .full {
-                grid-column: auto;
-            }
-
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AV Fitness | Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#0b0b0b;color:#fff}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.sidebar{position:fixed;inset:0 auto 0 0;width:250px;background:#111;border-right:1px solid #292929;padding:25px 15px;z-index:20}
+.logo{font-size:25px;font-weight:800;padding:0 15px 28px}.logo span{color:#ff3b30}
+.nav{width:100%;display:block;text-align:left;padding:13px 15px;margin:5px 0;background:transparent;color:#aaa;border:0;border-radius:8px}.nav:hover{background:#1d1d1d;color:#fff}.nav.active{background:#ff3b30;color:#fff}
+.logout{position:absolute;bottom:20px;left:15px;width:calc(100% - 30px);background:#1d1d1d}
+.main{margin-left:250px;min-height:100vh;padding:32px}
+.page{display:none}.page.active{display:block}.page-head{margin-bottom:25px}.page-head h1{font-size:31px;margin-bottom:6px}.page-head p{color:#888}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:22px}
+.card,.panel{background:#151515;border:1px solid #292929;border-radius:12px}.card{padding:20px}.panel{padding:22px;margin-bottom:22px}
+.card-title{color:#888;font-size:13px;margin-bottom:9px}.card-value{font-size:29px;font-weight:800}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.panel h2{font-size:20px}
+.primary,.secondary,.danger{border:0;border-radius:7px;padding:11px 17px;font-weight:700}.primary{background:#ff3b30;color:#fff}.secondary{background:#222;color:#fff;border:1px solid #333}.danger{background:#3d1717;color:#ff7777}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.full{grid-column:1/-1}.form-group{display:flex;flex-direction:column;gap:7px}label{font-size:13px;color:#aaa}
+input,select,textarea{width:100%;padding:12px;background:#0d0d0d;color:#fff;border:1px solid #333;border-radius:7px}textarea{min-height:100px;resize:vertical}input:focus,select:focus,textarea:focus{outline:0;border-color:#ff3b30}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:720px}th,td{padding:12px;border-bottom:1px solid #292929;text-align:left}th{color:#888;font-size:12px}td{color:#ddd}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px}.active{background:#173d24;color:#69df8a}.inactive{background:#3d1717;color:#ff7777}
+.empty{text-align:center;color:#777;padding:35px}.muted{color:#888}.actions{display:flex;gap:7px;flex-wrap:wrap}
+.trainer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.trainer-card{overflow:hidden}.trainer-img{width:100%;height:220px;object-fit:cover;background:#222;display:block}.trainer-img.empty-img{display:flex;align-items:center;justify-content:center;font-size:60px}.trainer-body{padding:16px}.trainer-body h3{margin-bottom:5px}.trainer-body p{color:#999;font-size:13px;margin:3px 0}
+.preview{width:140px;height:140px;object-fit:cover;border-radius:10px;border:1px solid #333;display:none}.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modal-box{width:min(720px,100%);max-height:90vh;overflow:auto;background:#151515;border:1px solid #333;border-radius:14px;padding:24px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.toast{position:fixed;right:20px;bottom:20px;background:#fff;color:#111;padding:13px 17px;border-radius:8px;display:none;z-index:200}.toast.show{display:block}
+.mobile-head{display:none}
+@media(max-width:800px){.sidebar{width:215px}.main{margin-left:215px;padding:22px}}
+@media(max-width:650px){.sidebar{display:none}.mobile-head{display:flex;position:sticky;top:0;z-index:30;background:#111;padding:14px 18px;justify-content:space-between;align-items:center;border-bottom:1px solid #292929}.main{margin-left:0;padding:18px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style>
 </head>
-
-
 <body>
 
-
-<!-- MOBILE HEADER -->
-
-<div class="mobile-header">
-
-    <div class="logo">
-        AV <span>FITNESS</span>
-    </div>
-
-    <button
-        class="secondary"
-        onclick="logout()"
-    >
-        Logout
-    </button>
-
-</div>
-
-
-<!-- SIDEBAR -->
+<div class="mobile-head"><div class="logo" style="padding:0">AV <span>FITNESS</span></div><button class="secondary" onclick="logout()">Logout</button></div>
 
 <aside class="sidebar">
-
-
-    <div class="logo">
-        AV <span>FITNESS</span>
-    </div>
-
-
-    <button
-        class="nav-button active"
-        onclick="showPage('dashboard', this)"
-    >
-        📊 Dashboard
-    </button>
-
-
-    <button
-        class="nav-button"
-        onclick="showPage('members', this)"
-    >
-        👥 Members
-    </button>
-
-
-    <button
-        class="nav-button"
-        onclick="showPage('billing', this)"
-    >
-        💳 Billing
-    </button>
-
-
-    <button
-        class="nav-button"
-        onclick="showPage('payments', this)"
-    >
-        🧾 Payments & Invoices
-    </button>
-
-
-    <button
-        class="nav-button"
-        onclick="showPage('trainers', this)"
-    >
-        🏋️ Trainers
-    </button>
-
-
-    <button
-        class="nav-button"
-        onclick="showPage('attendance', this)"
-    >
-        📅 Attendance
-    </button>
-
-
-    <button
-        class="nav-button"
-        onclick="showPage('settings', this)"
-    >
-        ⚙️ Settings
-    </button>
-
-
-    <button
-        class="nav-button logout"
-        onclick="logout()"
-    >
-        🚪 Logout
-    </button>
-
-
+  <div class="logo">AV <span>FITNESS</span></div>
+  <button class="nav active" data-page="dashboard">📊 Dashboard</button>
+  <button class="nav" data-page="members">👥 Members</button>
+  <button class="nav" data-page="billing">💳 Billing</button>
+  <button class="nav" data-page="payments">🧾 Payments & Invoices</button>
+  <button class="nav" data-page="trainers">🏋️ Trainers</button>
+  <button class="nav" data-page="attendance">📅 Attendance</button>
+  <button class="nav" data-page="settings">⚙️ Settings</button>
+  <button class="nav logout" onclick="logout()">🚪 Logout</button>
 </aside>
-
-
-<!-- MAIN -->
 
 <main class="main">
 
-
-    <!-- DASHBOARD -->
-
-    <section
-        id="dashboard"
-        class="page active"
-    >
-
-        <div class="page-header">
-
-            <h1>
-                Dashboard
-            </h1>
-
-            <p>
-                Welcome to AV Fitness administration.
-            </p>
-
-        </div>
-
-
-        <div class="stats">
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    Total Members
-                </div>
-
-                <div class="card-value">
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    Active Members
-                </div>
-
-                <div class="card-value">
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    Today's Attendance
-                </div>
-
-                <div class="card-value">
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    Monthly Revenue
-                </div>
-
-                <div class="card-value">
-                    ₹0
-                </div>
-
-            </div>
-
-
-        </div>
-
-
-        <div class="section">
-
-            <div class="section-header">
-
-                <h2>
-                    Quick Actions
-                </h2>
-
-            </div>
-
-
-            <button
-                class="primary"
-                onclick="showPageById('billing')"
-            >
-                + New Membership
-            </button>
-
-
-            <button
-                class="secondary"
-                onclick="showPageById('members')"
-            >
-                View Members
-            </button>
-
-
-        </div>
-
-    </section>
-
-
-    <!-- MEMBERS -->
-
-    <section
-        id="members"
-        class="page"
-    >
-
-        <div class="page-header">
-
-            <h1>
-                Members
-            </h1>
-
-            <p>
-                Manage all AV Fitness members.
-            </p>
-
-        </div>
-
-
-        <div class="section">
-
-            <div class="section-header">
-
-                <h2>
-                    All Members
-                </h2>
-
-                <button
-                    class="primary"
-                    onclick="openAddMember()"
-                >
-                    + Add Member
-                </button>
-
-            </div>
-
-
-            <input
-                type="search"
-                placeholder="Search members..."
-                id="memberSearch"
-            >
-
-
-            <div class="table-container">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Name
-                            </th>
-
-                            <th>
-                                Email
-                            </th>
-
-                            <th>
-                                Phone
-                            </th>
-
-                            <th>
-                                Package
-                            </th>
-
-                            <th>
-                                Expiry
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                        <tr>
-
-                            <td colspan="6">
-
-                                <div class="empty">
-                                    Members will appear here.
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-
-        <div class="section">
-
-            <div class="section-header">
-
-                <h2>
-                    Import Existing Members
-                </h2>
-
-            </div>
-
-
-            <p class="empty">
-
-                Import the gym's existing member
-                records from CSV or Excel.
-
-                <br><br>
-
-                The system will preview and validate
-                the records before importing them.
-
-            </p>
-
-
-            <button class="secondary">
-                Choose File
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <!-- BILLING -->
-
-    <section
-        id="billing"
-        class="page"
-    >
-
-        <div class="page-header">
-
-            <h1>
-                Billing
-            </h1>
-
-            <p>
-                Create memberships and generate invoices.
-            </p>
-
-        </div>
-
-
-        <div class="section">
-
-            <div class="section-header">
-
-                <h2>
-                    New Membership
-                </h2>
-
-            </div>
-
-
-            <form>
-
-
-                <div class="form-grid">
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Member Name
-                        </label>
-
-                        <input
-                            type="text"
-                            placeholder="Enter member name"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Email
-                        </label>
-
-                        <input
-                            type="email"
-                            placeholder="Enter email"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Phone
-                        </label>
-
-                        <input
-                            type="tel"
-                            placeholder="Enter phone number"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Membership
-                        </label>
-
-                        <select>
-
-                            <option>
-                                Monthly — ₹1,499
-                            </option>
-
-                            <option>
-                                Quarterly — ₹2,999
-                            </option>
-
-                            <option>
-                                Annual — ₹6,999
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Payment Method
-                        </label>
-
-                        <select>
-
-                            <option>
-                                UPI
-                            </option>
-
-                            <option>
-                                Cash
-                            </option>
-
-                            <option>
-                                Card
-                            </option>
-
-                            <option>
-                                Bank Transfer
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Amount
-                        </label>
-
-                        <input
-                            type="number"
-                            placeholder="₹"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group full">
-
-                        <label>
-                            Notes
-                        </label>
-
-                        <textarea
-                            placeholder="Optional notes..."
-                        ></textarea>
-
-                    </div>
-
-
-                </div>
-
-
-                <br>
-
-
-                <button
-                    type="button"
-                    class="primary"
-                >
-                    Create Membership & Generate Invoice
-                </button>
-
-
-            </form>
-
-        </div>
-
-    </section>
-
-
-    <!-- PAYMENTS -->
-
-    <section
-        id="payments"
-        class="page"
-    >
-
-        <div class="page-header">
-
-            <h1>
-                Payments & Invoices
-            </h1>
-
-            <p>
-                View payment history and invoices.
-            </p>
-
-        </div>
-
-
-        <div class="section">
-
-
-            <div class="table-container">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Invoice
-                            </th>
-
-                            <th>
-                                Member
-                            </th>
-
-                            <th>
-                                Date
-                            </th>
-
-                            <th>
-                                Amount
-                            </th>
-
-                            <th>
-                                Method
-                            </th>
-
-                            <th>
-                                Actions
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                        <tr>
-
-                            <td colspan="6">
-
-                                <div class="empty">
-                                    No payments yet.
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-        </div>
-
-    </section>
-
-
-    <!-- TRAINERS -->
-
-    <section
-        id="trainers"
-        class="page"
-    >
-
-        <div class="page-header">
-
-            <h1>
-                Trainers
-            </h1>
-
-            <p>
-                Manage personal trainers and assignments.
-            </p>
-
-        </div>
-
-
-        <div class="section">
-
-            <div class="section-header">
-
-                <h2>
-                    Personal Trainers
-                </h2>
-
-                <button
-                    class="primary"
-                >
-                    + Add Trainer
-                </button>
-
-            </div>
-
-
-            <div class="empty">
-
-                Trainer management will appear here.
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ATTENDANCE -->
-
-    <section
-        id="attendance"
-        class="page"
-    >
-
-        <div class="page-header">
-
-            <h1>
-                Attendance
-            </h1>
-
-            <p>
-                Monitor gym attendance and connect the
-                fingerprint device.
-            </p>
-
-        </div>
-
-
-        <div class="stats">
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    Today's Attendance
-                </div>
-
-                <div class="card-value">
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    Currently In Gym
-                </div>
-
-                <div class="card-value">
-                    0
-                </div>
-
-            </div>
-
-
-        </div>
-
-
-        <div class="section">
-
-            <h2>
-                Fingerprint Device
-            </h2>
-
-            <p class="empty">
-
-                Device integration will be connected here.
-
-            </p>
-
-        </div>
-
-    </section>
-
-
-    <!-- SETTINGS -->
-
-    <section
-        id="settings"
-        class="page"
-    >
-
-        <div class="page-header">
-
-            <h1>
-                Settings
-            </h1>
-
-            <p>
-                AV Fitness gym settings.
-            </p>
-
-        </div>
-
-
-        <div class="section">
-
-
-            <div class="form-grid">
-
-
-                <div class="form-group">
-
-                    <label>
-                        Gym Name
-                    </label>
-
-                    <input
-                        value="AV Fitness"
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Location
-                    </label>
-
-                    <input
-                        value="Chennai"
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Phone
-                    </label>
-
-                    <input
-                        value="9999999999"
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Tagline
-                    </label>
-
-                    <input
-                        value="Get Fit Don't Quit"
-                    >
-
-                </div>
-
-
-            </div>
-
-
-        </div>
-
-    </section>
-
+<section id="dashboard" class="page active">
+  <div class="page-head"><h1>Dashboard</h1><p>AV Fitness administration</p></div>
+  <div class="stats">
+    <div class="card"><div class="card-title">Total Members</div><div class="card-value" id="statMembers">0</div></div>
+    <div class="card"><div class="card-title">Active Members</div><div class="card-value" id="statActive">0</div></div>
+    <div class="card"><div class="card-title">Today's Attendance</div><div class="card-value" id="statAttendance">0</div></div>
+    <div class="card"><div class="card-title">Today's Revenue</div><div class="card-value" id="statRevenue">₹0</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Memberships Expiring in 30 Days</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>Name</th><th>Package</th><th>Expiry</th></tr></thead><tbody id="expiringBody"></tbody></table></div>
+  </div>
+</section>
+
+<section id="members" class="page">
+  <div class="page-head"><h1>Members</h1><p>Manage current and past member records.</p></div>
+  <div class="panel">
+    <div class="panel-head"><h2>All Members</h2><button class="primary" onclick="openMemberModal()">+ Add Member</button></div>
+    <input id="memberSearch" placeholder="Search name, email or phone..." style="margin-bottom:16px">
+    <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Package</th><th>Expiry</th><th>Status</th></tr></thead><tbody id="membersBody"></tbody></table></div>
+  </div>
+</section>
+
+<section id="billing" class="page">
+  <div class="page-head"><h1>Billing</h1><p>Create a membership, record payment and generate an invoice.</p></div>
+  <div class="panel">
+    <div class="panel-head"><h2>New Bill</h2></div>
+    <form id="billingForm">
+      <div class="form-grid">
+        <div class="form-group full"><label>Member</label><select id="billMember" required></select></div>
+        <div class="form-group"><label>Membership</label><select id="billPackage"><option>Monthly</option><option>Quarterly</option><option>Annual</option></select></div>
+        <div class="form-group"><label>Membership Start</label><input id="billStart" type="date" required></div>
+        <div class="form-group"><label>Membership End</label><input id="billEnd" type="date" required></div>
+        <div class="form-group"><label>Reference Amount</label><input id="billReference" type="number" readonly></div>
+        <div class="form-group"><label>Discount</label><input id="billDiscount" type="number" min="0" value="0"></div>
+        <div class="form-group"><label>Final Amount <span class="muted">(Admin decides)</span></label><input id="billFinal" type="number" min="0" step="0.01" required></div>
+        <div class="form-group"><label>Payment Method</label><select id="billMethod"><option>UPI</option><option>Cash</option><option>Card</option><option>Bank Transfer</option></select></div>
+        <div class="form-group full"><label>Transaction Reference</label><input id="billReferenceNo" placeholder="Optional"></div>
+        <div class="form-group full"><label>Notes</label><textarea id="billNotes" placeholder="Optional"></textarea></div>
+      </div>
+      <div style="margin-top:18px"><button class="primary" type="submit">Create Bill & Generate Invoice</button></div>
+    </form>
+  </div>
+</section>
+
+<section id="payments" class="page">
+  <div class="page-head"><h1>Payments & Invoices</h1><p>View payment history and generated invoices.</p></div>
+  <div class="panel">
+    <div class="panel-head"><h2>Payments</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Member</th><th>Package</th><th>Amount</th><th>Method</th><th>Reference</th></tr></thead><tbody id="paymentsBody"></tbody></table></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Invoices</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Member</th><th>Date</th><th>Amount</th><th>Action</th></tr></thead><tbody id="invoicesBody"></tbody></table></div>
+  </div>
+</section>
+
+<section id="trainers" class="page">
+  <div class="page-head"><h1>Trainers</h1><p>Manage trainer profiles shown on the public website.</p></div>
+  <div class="panel">
+    <div class="panel-head"><h2>Trainer Profiles</h2><button class="primary" onclick="openTrainerModal()">+ Add Trainer</button></div>
+    <div class="trainer-grid" id="trainerGrid"></div>
+  </div>
+</section>
+
+<section id="attendance" class="page">
+  <div class="page-head"><h1>Attendance</h1><p>Today's attendance records.</p></div>
+  <div class="panel">
+    <div class="panel-head"><h2>Today</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>Member</th><th>Date</th><th>Time</th></tr></thead><tbody id="attendanceBody"></tbody></table></div>
+  </div>
+</section>
+
+<section id="settings" class="page">
+  <div class="page-head"><h1>Settings</h1><p>AV Fitness settings.</p></div>
+  <div class="panel">
+    <div class="form-grid">
+      <div class="form-group"><label>Gym Name</label><input value="AV Fitness" readonly></div>
+      <div class="form-group"><label>Location</label><input value="Chennai, Tamil Nadu" readonly></div>
+      <div class="form-group"><label>Phone</label><input value="9999999999" readonly></div>
+      <div class="form-group"><label>Tagline</label><input value="Get Fit. Don't Quit." readonly></div>
+    </div>
+  </div>
+</section>
 
 </main>
 
+<div id="memberModal" class="modal">
+ <div class="modal-box">
+  <div class="modal-head"><h2>Add Member</h2><button class="secondary" onclick="closeModal('memberModal')">Close</button></div>
+  <form id="memberForm">
+   <div class="form-grid">
+    <div class="form-group"><label>Name</label><input id="mName" required></div>
+    <div class="form-group"><label>Email</label><input id="mEmail" type="email" required></div>
+    <div class="form-group"><label>Phone</label><input id="mPhone"></div>
+    <div class="form-group"><label>Membership</label><select id="mPackage"><option>Monthly</option><option>Quarterly</option><option>Annual</option></select></div>
+    <div class="form-group"><label>Start</label><input id="mStart" type="date" required></div>
+    <div class="form-group"><label>End</label><input id="mEnd" type="date" required></div>
+   </div>
+   <div style="margin-top:18px"><button class="primary">Add Member</button></div>
+  </form>
+ </div>
+</div>
+
+<div id="trainerModal" class="modal">
+ <div class="modal-box">
+  <div class="modal-head"><h2 id="trainerModalTitle">Add Trainer</h2><button class="secondary" onclick="closeModal('trainerModal')">Close</button></div>
+  <form id="trainerForm">
+   <input id="trainerId" type="hidden">
+   <div class="form-grid">
+    <div class="form-group"><label>Name</label><input id="tName" required></div>
+    <div class="form-group"><label>Specialization</label><input id="tSpecialization" required></div>
+    <div class="form-group"><label>Experience (years)</label><input id="tExperience" type="number" min="0"></div>
+    <div class="form-group"><label>Phone (admin only)</label><input id="tPhone"></div>
+    <div class="form-group full"><label>Photo</label><input id="tPhoto" type="file" accept="image/jpeg,image/png,image/webp"><img id="photoPreview" class="preview" alt="Photo preview"></div>
+   </div>
+   <div style="margin-top:18px"><button class="primary" id="trainerSaveButton">Save Trainer</button></div>
+  </form>
+ </div>
+</div>
+
+<div id="toast" class="toast"></div>
 
 <script>
+const SUPABASE_URL = "https://hwcvzgnldnnvpzqaprmr.supabase.co";
+const SUPABASE_KEY = "sb_publishable__p2vDp05-aQKlAjGbp8vqw_7c9fyHtK";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+const PACKAGE_PRICES = { Monthly:1499, Quarterly:2999, Annual:6999 };
+let members=[], trainers=[];
 
-/* PAGE NAVIGATION */
+const $ = id => document.getElementById(id);
+function toast(message){const t=$("toast");t.textContent=message;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000)}
+function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+function money(v){return "₹"+Number(v||0).toLocaleString("en-IN")}
+function closeModal(id){$(id).classList.remove("show")}
+function openMemberModal(){$("memberModal").classList.add("show")}
+function openTrainerModal(){
+  $("trainerForm").reset();$("trainerId").value="";$("photoPreview").style.display="none";$("photoPreview").src="";$("trainerModalTitle").textContent="Add Trainer";$("trainerSaveButton").textContent="Save Trainer";$("trainerModal").classList.add("show");
+}
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".nav").forEach(n=>n.classList.remove("active"));
+  $(id).classList.add("active");
+  const n=document.querySelector(`.nav[data-page="${id}"]`); if(n)n.classList.add("active");
+}
+document.querySelectorAll(".nav[data-page]").forEach(n=>n.addEventListener("click",()=>showPage(n.dataset.page)));
 
+async function requireAdmin(){
+  const {data,error}=await supabaseClient.auth.getSession();
+  if(error||!data.session){location.href="login.html";return false}
+  const {data:role,error:roleError}=await supabaseClient.from("user_roles").select("role").eq("user_id",data.session.user.id).eq("role","admin").maybeSingle();
+  if(roleError||!role){await supabaseClient.auth.signOut();alert("Administrator access required.");location.href="login.html";return false}
+  return true;
+}
 
-function showPage(
-    pageId,
-    button
-) {
+async function loadMembers(){
+  const {data,error}=await supabaseClient.from("members").select("*").order("member_id",{ascending:false});
+  if(error){console.error(error);toast("Unable to load members");return}
+  members=data||[];renderMembers();populateBillingMembers();await loadDashboard();
+}
+function memberActive(m){return m.membership_end && new Date(m.membership_end+"T23:59:59")>=new Date()}
+function renderMembers(){
+  const body=$("membersBody");body.innerHTML="";
+  if(!members.length){body.innerHTML=`<tr><td colspan="6" class="empty">No members found.</td></tr>`;return}
+  members.forEach(m=>body.insertAdjacentHTML("beforeend",`<tr><td>${esc(m.name)}</td><td>${esc(m.email)}</td><td>${esc(m.phone||"-")}</td><td>${esc(m.membership_type||"-")}</td><td>${esc(m.membership_end||"-")}</td><td><span class="badge ${memberActive(m)?"active":"inactive"}">${memberActive(m)?"Active":"Expired"}</span></td></tr>`))
+}
+$("memberSearch").addEventListener("input",e=>{
+  const q=e.target.value.toLowerCase();document.querySelectorAll("#membersBody tr").forEach(r=>r.style.display=r.textContent.toLowerCase().includes(q)?"":"none")
+});
+$("memberForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const record={name:$("mName").value.trim(),email:$("mEmail").value.trim(),phone:$("mPhone").value.trim(),membership_type:$("mPackage").value,membership_start:$("mStart").value,membership_end:$("mEnd").value};
+  const {error}=await supabaseClient.from("members").insert(record);
+  if(error){console.error(error);toast("Unable to add member");return}
+  closeModal("memberModal");e.target.reset();toast("Member added");await loadMembers();
+});
+function populateBillingMembers(){
+  $("billMember").innerHTML=`<option value="">Select member</option>`+members.map(m=>`<option value="${esc(m.member_id)}">${esc(m.name)} — ${esc(m.phone||m.email)}</option>`).join("");
+}
+function updateBillReference(){
+  const p=$("billPackage").value, ref=PACKAGE_PRICES[p];$("billReference").value=ref;
+  const discount=Number($("billDiscount").value||0);
+  if(document.activeElement!==$("billFinal"))$("billFinal").value=Math.max(ref-discount,0);
+}
+$("billPackage").addEventListener("change",updateBillReference);
+$("billDiscount").addEventListener("input",updateBillReference);
+$("billingForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const memberId=Number($("billMember").value), finalAmount=Number($("billFinal").value);
+  if(!memberId||!Number.isFinite(finalAmount)||finalAmount<0){toast("Select a member and enter a valid amount");return}
+  const p=$("billPackage").value, standard=Number($("billReference").value), discount=Number($("billDiscount").value||0);
+  const payment={member_id:memberId,amount:finalAmount,package:p,payment_method:$("billMethod").value,transaction_reference:$("billReferenceNo").value.trim(),standard_amount:standard,discount_amount:discount,notes:$("billNotes").value.trim()};
+  const {data:pay,error:payError}=await supabaseClient.from("payments").insert(payment).select().single();
+  if(payError){console.error(payError);toast("Payment could not be saved");return}
+  const invoiceNumber=`AVF-${new Date().getFullYear()}-${String(pay.payment_id).padStart(5,"0")}`;
+  const {error:invError}=await supabaseClient.from("invoices").insert({invoice_number:invoiceNumber,member_id:memberId,payment_id:pay.payment_id,standard_amount:standard,discount_amount:discount,final_amount:finalAmount});
+  if(invError){console.error(invError);toast("Payment saved but invoice failed");return}
+  const {error:memError}=await supabaseClient.from("members").update({membership_type:p,membership_start:$("billStart").value,membership_end:$("billEnd").value}).eq("member_id",memberId);
+  if(memError){console.error(memError);toast("Invoice saved but membership update failed");return}
+  toast(`Bill created: ${invoiceNumber}`);e.target.reset();updateBillReference();await loadMembers();await loadPayments();await loadInvoices();
+});
+async function loadPayments(){
+  const {data,error}=await supabaseClient.from("payments").select("*,members(name)").order("payment_id",{ascending:false});
+  if(error){console.error(error);return}
+  $("paymentsBody").innerHTML=(data||[]).map(p=>`<tr><td>${esc(p.payment_date?new Date(p.payment_date).toLocaleString("en-IN"):"-")}</td><td>${esc(p.members?.name||"-")}</td><td>${esc(p.package||"-")}</td><td>${money(p.amount)}</td><td>${esc(p.payment_method||"-")}</td><td>${esc(p.transaction_reference||"-")}</td></tr>`).join("")||`<tr><td colspan="6" class="empty">No payments yet.</td></tr>`;
+}
+async function loadInvoices(){
+  const {data,error}=await supabaseClient.from("invoices").select("*,members(name)").order("invoice_id",{ascending:false});
+  if(error){console.error(error);return}
+  $("invoicesBody").innerHTML=(data||[]).map(i=>`<tr><td>${esc(i.invoice_number)}</td><td>${esc(i.members?.name||"-")}</td><td>${esc(i.issue_date||"-")}</td><td>${money(i.final_amount)}</td><td><button class="secondary" onclick="printInvoice(${Number(i.invoice_id)})">Print</button></td></tr>`).join("")||`<tr><td colspan="5" class="empty">No invoices yet.</td></tr>`;
+}
+async function printInvoice(id){
+  const {data:i,error}=await supabaseClient.from("invoices").select("*,members(name,email,phone)").eq("invoice_id",id).single();
+  if(error){toast("Unable to load invoice");return}
+  const w=window.open("","_blank");w.document.write(`<html><head><title>${esc(i.invoice_number)}</title><style>body{font-family:Arial;padding:40px}.box{max-width:700px;margin:auto}table{width:100%;border-collapse:collapse;margin-top:25px}td{padding:12px;border-bottom:1px solid #ddd}.total{font-weight:bold;font-size:20px}</style></head><body><div class="box"><h1>AV FITNESS</h1><p>Get Fit. Don't Quit.</p><hr><h2>INVOICE</h2><p>Invoice: ${esc(i.invoice_number)}</p><p>Date: ${esc(i.issue_date||"-")}</p><br><p><b>Member</b><br>${esc(i.members?.name||"-")}<br>${esc(i.members?.email||"")}<br>${esc(i.members?.phone||"")}</p><table><tr><td>Standard Amount</td><td>${money(i.standard_amount)}</td></tr><tr><td>Discount</td><td>${money(i.discount_amount)}</td></tr><tr class="total"><td>Amount Paid</td><td>${money(i.final_amount)}</td></tr></table><p style="margin-top:30px">Thank you for choosing AV Fitness.</p></div></body></html>`);w.document.close();w.print();
+}
 
-
-    const pages =
-        document.querySelectorAll(
-            ".page"
-        );
-
-
-    pages.forEach(
-        page => {
-
-            page.classList.remove(
-                "active"
-            );
-
-        }
-    );
-
-
-    const selectedPage =
-        document.getElementById(
-            pageId
-        );
-
-
-    if (selectedPage) {
-
-        selectedPage.classList.add(
-            "active"
-        );
-
+async function loadTrainers(){
+  const {data,error}=await supabaseClient.from("trainers").select("*").order("trainer_id",{ascending:false});
+  if(error){console.error(error);toast("Unable to load trainers");return}
+  trainers=data||[];renderTrainers();
+}
+function renderTrainers(){
+  const grid=$("trainerGrid");grid.innerHTML="";
+  if(!trainers.length){grid.innerHTML=`<div class="empty">No trainers added yet.</div>`;return}
+  trainers.forEach(t=>{
+    const img=t.photo_url?`<img class="trainer-img" src="${esc(t.photo_url)}" alt="${esc(t.name)}">`:`<div class="trainer-img empty-img">🏋️</div>`;
+    grid.insertAdjacentHTML("beforeend",`<div class="card trainer-card">${img}<div class="trainer-body"><h3>${esc(t.name)}</h3><p>${esc(t.specialization||"Fitness Trainer")}</p><p>${Number(t.experience_years||0)} year${Number(t.experience_years||0)==1?"":"s"} experience</p><p>Phone: ${esc(t.phone||"-")}</p><p style="margin-top:9px"><span class="badge ${t.is_active?"active":"inactive"}">${t.is_active?"Visible on website":"Hidden from website"}</span></p><div class="actions" style="margin-top:12px"><button class="secondary" onclick="editTrainer(${Number(t.trainer_id)})">Edit</button><button class="secondary" onclick="toggleTrainer(${Number(t.trainer_id)},${!t.is_active})">${t.is_active?"Hide":"Publish"}</button></div></div></div>`);
+  });
+}
+$("tPhoto").addEventListener("change",()=>{
+  const f=$("tPhoto").files[0];if(!f){$("photoPreview").style.display="none";return}
+  $("photoPreview").src=URL.createObjectURL(f);$("photoPreview").style.display="block";
+});
+async function uploadTrainerPhoto(file,trainerId){
+  const ext=(file.name.split(".").pop()||"jpg").toLowerCase();
+  const path=`${trainerId}-${crypto.randomUUID()}.${ext}`;
+  const {error}=await supabaseClient.storage.from("trainer-photos").upload(path,file,{upsert:false,contentType:file.type});
+  if(error)throw error;
+  const {data}=supabaseClient.storage.from("trainer-photos").getPublicUrl(path);
+  return data.publicUrl;
+}
+async function editTrainer(id){
+  const t=trainers.find(x=>Number(x.trainer_id)===Number(id));if(!t)return;
+  $("trainerId").value=t.trainer_id;$("tName").value=t.name||"";$("tSpecialization").value=t.specialization||"";$("tExperience").value=t.experience_years??"";$("tPhone").value=t.phone||"";$("tPhoto").value="";
+  if(t.photo_url){$("photoPreview").src=t.photo_url;$("photoPreview").style.display="block"}else $("photoPreview").style.display="none";
+  $("trainerModalTitle").textContent="Edit Trainer";$("trainerSaveButton").textContent="Save Changes";$("trainerModal").classList.add("show");
+}
+$("trainerForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const id=$("trainerId").value;
+  const record={name:$("tName").value.trim(),specialization:$("tSpecialization").value.trim(),experience_years:Number($("tExperience").value||0),phone:$("tPhone").value.trim()};
+  try{
+    if(id){
+      const f=$("tPhoto").files[0];
+      if(f)record.photo_url=await uploadTrainerPhoto(f,id);
+      const {error}=await supabaseClient.from("trainers").update(record).eq("trainer_id",Number(id));if(error)throw error;
+      toast("Trainer updated");
+    }else{
+      const {data:newT,error}=await supabaseClient.from("trainers").insert({...record,is_active:true}).select().single();if(error)throw error;
+      const f=$("tPhoto").files[0];
+      if(f){const url=await uploadTrainerPhoto(f,newT.trainer_id);const {error:uErr}=await supabaseClient.from("trainers").update({photo_url:url}).eq("trainer_id",newT.trainer_id);if(uErr)throw uErr}
+      toast("Trainer added");
     }
-
-
-    const buttons =
-        document.querySelectorAll(
-            ".nav-button"
-        );
-
-
-    buttons.forEach(
-        navButton => {
-
-            navButton.classList.remove(
-                "active"
-            );
-
-        }
-    );
-
-
-    if (button) {
-
-        button.classList.add(
-            "active"
-        );
-
-    }
-
+    closeModal("trainerModal");await loadTrainers();
+  }catch(err){console.error(err);toast("Trainer could not be saved")}
+});
+async function toggleTrainer(id,value){
+  const {error}=await supabaseClient.from("trainers").update({is_active:value}).eq("trainer_id",id);
+  if(error){console.error(error);toast("Unable to update trainer");return}
+  toast(value?"Trainer published":"Trainer hidden");await loadTrainers();
 }
-
-
-/* QUICK ACTION NAVIGATION */
-
-
-function showPageById(
-    pageId
-) {
-
-
-    const pages =
-        document.querySelectorAll(
-            ".page"
-        );
-
-
-    pages.forEach(
-        page => {
-
-            page.classList.remove(
-                "active"
-            );
-
-        }
-    );
-
-
-    const page =
-        document.getElementById(
-            pageId
-        );
-
-
-    if (page) {
-
-        page.classList.add(
-            "active"
-        );
-
-    }
-
-
-    const buttons =
-        document.querySelectorAll(
-            ".nav-button"
-        );
-
-
-    buttons.forEach(
-        button => {
-
-            button.classList.remove(
-                "active"
-            );
-
-        }
-    );
-
+async function loadAttendance(){
+  const today=new Date().toISOString().slice(0,10);
+  const {data,error}=await supabaseClient.from("attendance").select("*,members(name)").eq("attendance_date",today).order("attendance_time",{ascending:false});
+  if(error){console.error(error);return}
+  $("attendanceBody").innerHTML=(data||[]).map(a=>`<tr><td>${esc(a.members?.name||"-")}</td><td>${esc(a.attendance_date)}</td><td>${esc(a.attendance_time||"-")}</td></tr>`).join("")||`<tr><td colspan="3" class="empty">No attendance recorded today.</td></tr>`;
 }
-
-
-/* PLACEHOLDER */
-
-
-function openAddMember() {
-
-    showPageById(
-        "billing"
-    );
-
+async function loadDashboard(){
+  $("statMembers").textContent=members.length;
+  $("statActive").textContent=members.filter(memberActive).length;
+  const today=new Date().toISOString().slice(0,10);
+  const {count:attCount}=await supabaseClient.from("attendance").select("attendance_id",{count:"exact",head:true}).eq("attendance_date",today);
+  $("statAttendance").textContent=attCount||0;
+  const {data:rev}=await supabaseClient.from("payments").select("amount").gte("payment_date",today+"T00:00:00").lt("payment_date",today+"T23:59:59");
+  $("statRevenue").textContent=money((rev||[]).reduce((s,p)=>s+Number(p.amount||0),0));
+  const exp=members.filter(m=>{
+    if(!m.membership_end)return false;const d=(new Date(m.membership_end+"T23:59:59")-new Date())/86400000;return d>=0&&d<=30;
+  }).sort((a,b)=>new Date(a.membership_end)-new Date(b.membership_end));
+  $("expiringBody").innerHTML=exp.map(m=>`<tr><td>${esc(m.name)}</td><td>${esc(m.membership_type||"-")}</td><td>${esc(m.membership_end)}</td></tr>`).join("")||`<tr><td colspan="3" class="empty">No memberships expiring soon.</td></tr>`;
 }
-
-
-/* LOGOUT PLACEHOLDER */
-
-
-function logout() {
-
-    alert(
-        "Logout will be connected after the new Admin interface is tested."
-    );
-
+async function logout(){await supabaseClient.auth.signOut();location.href="login.html"}
+async function init(){
+  if(!(await requireAdmin()))return;
+  await loadMembers();await loadPayments();await loadInvoices();await loadTrainers();await loadAttendance();updateBillReference();
 }
-
-
+init();
 </script>
-
-
 </body>
-
 </html>
