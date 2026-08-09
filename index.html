@@ -130,7 +130,7 @@ document.getElementById("plansGrid").innerHTML='<div class="empty">Membership pl
 
 async function loadTrainers(){
 try{
-if(SUPABASE_URL==="https://hwcvzgnldnnvpzqaprmr.supabase.co"||SUPABASE_ANON_KEY==="sb_publishable__p2vDp05-aQKlAjGbp8vqw_7c9fyHtK"){
+if(SUPABASE_URL==="YOUR_SUPABASE_URL"||SUPABASE_ANON_KEY==="YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY"){
 grid.innerHTML='<div class="empty">Connect Supabase to load trainers.</div>';return;
 }
 db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
