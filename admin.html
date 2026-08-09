@@ -82,18 +82,70 @@ input,select,textarea{width:100%;padding:12px;background:#0d0d0d;color:#fff;bord
     <div class="panel-head"><h2>New Bill</h2></div>
     <form id="billingForm">
       <div class="form-grid">
-        <div class="form-group full"><label>Member</label><select id="billMember" required></select></div>
-        <div class="form-group"><label>Membership</label><select id="billPackage"><option>Monthly</option><option>Quarterly</option><option>Annual</option></select></div>
-        <div class="form-group"><label>Membership Start</label><input id="billStart" type="date" required></div>
-        <div class="form-group"><label>Membership End</label><input id="billEnd" type="date" required></div>
-        <div class="form-group"><label>Reference Amount</label><input id="billReference" type="number" readonly></div>
-        <div class="form-group"><label>Discount</label><input id="billDiscount" type="number" min="0" value="0"></div>
-        <div class="form-group"><label>Final Amount <span class="muted">(Admin decides)</span></label><input id="billFinal" type="number" min="0" step="0.01" required></div>
-        <div class="form-group"><label>Payment Method</label><select id="billMethod"><option>UPI</option><option>Cash</option><option>Card</option><option>Bank Transfer</option></select></div>
-        <div class="form-group full"><label>Transaction Reference</label><input id="billReferenceNo" placeholder="Optional"></div>
-        <div class="form-group full"><label>Notes</label><textarea id="billNotes" placeholder="Optional"></textarea></div>
+        <div class="form-group full">
+          <label>Member</label>
+          <select id="billMember" required></select>
+        </div>
+
+        <div class="form-group">
+          <label>Membership</label>
+          <select id="billPackage">
+            <option>Monthly</option>
+            <option>Quarterly</option>
+            <option>Annual</option>
+            <option>Custom</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Number of Days</label>
+          <input id="billDays" type="number" min="1" step="1" placeholder="e.g. 30" required>
+        </div>
+
+        <div class="form-group">
+          <label>Start Date</label>
+          <input id="billStart" type="date" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>End Date</label>
+          <input id="billEnd" type="date" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Reference Amount</label>
+          <input id="billReference" type="number" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Discount</label>
+          <input id="billDiscount" type="number" min="0" step="0.01" value="0">
+        </div>
+
+        <div class="form-group">
+          <label>Final Amount <span class="muted">(Admin decides)</span></label>
+          <input id="billFinal" type="number" min="0" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+          <label>Payment Method</label>
+          <select id="billMethod">
+            <option>UPI</option>
+            <option>Cash</option>
+            <option>Card</option>
+            <option>Bank Transfer</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label>Transaction Reference</label>
+          <input id="billReferenceNo" placeholder="Optional">
+        </div>
       </div>
-      <div style="margin-top:18px"><button class="primary" type="submit">Create Bill & Generate Invoice</button></div>
+
+      <div style="margin-top:18px">
+        <button class="primary" type="submit">Create Bill & Generate Invoice</button>
+      </div>
     </form>
   </div>
 </section>
@@ -230,31 +282,197 @@ $("memberForm").addEventListener("submit",async e=>{
   if(error){console.error(error);toast("Unable to add member");return}
   closeModal("memberModal");e.target.reset();toast("Member added");await loadMembers();
 });
+function getIndiaDateString(){
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+}
+
+function addDaysToDate(dateString, days){
+  const d = new Date(`${dateString}T00:00:00`);
+  d.setDate(d.getDate() + Number(days) - 1);
+  return d.toISOString().slice(0,10);
+}
+
 function populateBillingMembers(){
-  $("billMember").innerHTML=`<option value="">Select member</option>`+members.map(m=>`<option value="${esc(m.member_id)}">${esc(m.name)} — ${esc(m.phone||m.email)}</option>`).join("");
+  $("billMember").innerHTML =
+    `<option value="">Select member</option>` +
+    members.map(m =>
+      `<option value="${esc(m.member_id)}">${esc(m.name)} — ${esc(m.phone || m.email)}</option>`
+    ).join("");
 }
+
+function setBillingStartDate(){
+  $("billStart").value = getIndiaDateString();
+  updateBillEndDate();
+}
+
+function updateBillEndDate(){
+  const start = $("billStart").value;
+  const days = Number($("billDays").value || 0);
+
+  if(start && days >= 1){
+    $("billEnd").value = addDaysToDate(start, days);
+  } else {
+    $("billEnd").value = "";
+  }
+}
+
 function updateBillReference(){
-  const p=$("billPackage").value, ref=PACKAGE_PRICES[p];$("billReference").value=ref;
-  const discount=Number($("billDiscount").value||0);
-  if(document.activeElement!==$("billFinal"))$("billFinal").value=Math.max(ref-discount,0);
+  const packageName = $("billPackage").value;
+  const reference = PACKAGE_PRICES[packageName] ?? "";
+  $("billReference").value = reference;
+
+  const discount = Number($("billDiscount").value || 0);
+
+  // The admin controls the final amount. We only provide a sensible
+  // starting value; after the admin edits it, changing discount won't overwrite it.
+  if(!$("billFinal").dataset.adminEdited){
+    $("billFinal").value =
+      reference === "" ? "" : Math.max(Number(reference) - discount, 0);
+  }
 }
-$("billPackage").addEventListener("change",updateBillReference);
-$("billDiscount").addEventListener("input",updateBillReference);
-$("billingForm").addEventListener("submit",async e=>{
-  e.preventDefault();
-  const memberId=Number($("billMember").value), finalAmount=Number($("billFinal").value);
-  if(!memberId||!Number.isFinite(finalAmount)||finalAmount<0){toast("Select a member and enter a valid amount");return}
-  const p=$("billPackage").value, standard=Number($("billReference").value), discount=Number($("billDiscount").value||0);
-  const payment={member_id:memberId,amount:finalAmount,package:p,payment_method:$("billMethod").value,transaction_reference:$("billReferenceNo").value.trim(),standard_amount:standard,discount_amount:discount,notes:$("billNotes").value.trim()};
-  const {data:pay,error:payError}=await supabaseClient.from("payments").insert(payment).select().single();
-  if(payError){console.error(payError);toast("Payment could not be saved");return}
-  const invoiceNumber=`AVF-${new Date().getFullYear()}-${String(pay.payment_id).padStart(5,"0")}`;
-  const {error:invError}=await supabaseClient.from("invoices").insert({invoice_number:invoiceNumber,member_id:memberId,payment_id:pay.payment_id,standard_amount:standard,discount_amount:discount,final_amount:finalAmount});
-  if(invError){console.error(invError);toast("Payment saved but invoice failed");return}
-  const {error:memError}=await supabaseClient.from("members").update({membership_type:p,membership_start:$("billStart").value,membership_end:$("billEnd").value}).eq("member_id",memberId);
-  if(memError){console.error(memError);toast("Invoice saved but membership update failed");return}
-  toast(`Bill created: ${invoiceNumber}`);e.target.reset();updateBillReference();await loadMembers();await loadPayments();await loadInvoices();
+
+$("billPackage").addEventListener("change", () => {
+  delete $("billFinal").dataset.adminEdited;
+  updateBillReference();
 });
+
+$("billDays").addEventListener("input", updateBillEndDate);
+$("billDiscount").addEventListener("input", updateBillReference);
+
+$("billFinal").addEventListener("input", () => {
+  $("billFinal").dataset.adminEdited = "true";
+});
+
+$("billingForm").addEventListener("reset", () => {
+  setTimeout(() => {
+    delete $("billFinal").dataset.adminEdited;
+    setBillingStartDate();
+    updateBillReference();
+  }, 0);
+});
+
+$("billingForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const memberId = Number($("billMember").value);
+  const packageName = $("billPackage").value;
+  const days = Number($("billDays").value);
+  const startDate = $("billStart").value;
+  const endDate = $("billEnd").value;
+
+  const referenceAmount = Number($("billReference").value || 0);
+  const discount = Number($("billDiscount").value || 0);
+  const finalAmount = Number($("billFinal").value);
+
+  if(!memberId){
+    toast("Please select a member");
+    return;
+  }
+
+  if(!Number.isInteger(days) || days < 1){
+    toast("Enter a valid number of days");
+    return;
+  }
+
+  if(!startDate || !endDate){
+    toast("Membership dates could not be calculated");
+    return;
+  }
+
+  if(!Number.isFinite(finalAmount) || finalAmount < 0){
+    toast("Enter a valid final amount");
+    return;
+  }
+
+  if(discount < 0 || discount > referenceAmount){
+    toast("Check the discount amount");
+    return;
+  }
+
+  const submitButton = e.target.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  submitButton.textContent = "Creating Bill...";
+
+  try {
+    /*
+      IMPORTANT:
+      payments only receives columns that actually exist in the current
+      payments table. Invoice-specific discount/reference data is stored
+      in invoices.
+    */
+    const payment = {
+      member_id: memberId,
+      amount: finalAmount,
+      package: packageName,
+      payment_method: $("billMethod").value,
+      transaction_reference: $("billReferenceNo").value.trim()
+    };
+
+    const {data: pay, error: payError} =
+      await supabaseClient
+        .from("payments")
+        .insert(payment)
+        .select("payment_id")
+        .single();
+
+    if(payError) throw new Error(`Payment: ${payError.message}`);
+
+    const invoiceNumber =
+      `AVF-${new Date().getFullYear()}-${String(pay.payment_id).padStart(5,"0")}`;
+
+    const invoice = {
+      invoice_number: invoiceNumber,
+      member_id: memberId,
+      payment_id: pay.payment_id,
+      standard_amount: referenceAmount,
+      discount_amount: discount,
+      final_amount: finalAmount
+    };
+
+    const {error: invoiceError} =
+      await supabaseClient
+        .from("invoices")
+        .insert(invoice);
+
+    if(invoiceError) throw new Error(`Invoice: ${invoiceError.message}`);
+
+    const {error: memberError} =
+      await supabaseClient
+        .from("members")
+        .update({
+          membership_type: packageName,
+          membership_start: startDate,
+          membership_end: endDate
+        })
+        .eq("member_id", memberId);
+
+    if(memberError) throw new Error(`Member: ${memberError.message}`);
+
+    toast(`Bill created: ${invoiceNumber}`);
+
+    e.target.reset();
+    delete $("billFinal").dataset.adminEdited;
+    setBillingStartDate();
+    updateBillReference();
+
+    await loadMembers();
+    await loadPayments();
+    await loadInvoices();
+
+  } catch(error) {
+    console.error("Billing error:", error);
+    toast(error.message || "Unable to save payment");
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "Create Bill & Generate Invoice";
+  }
+});
+
 async function loadPayments(){
   const {data,error}=await supabaseClient.from("payments").select("*,members(name)").order("payment_id",{ascending:false});
   if(error){console.error(error);return}
@@ -348,7 +566,7 @@ async function loadDashboard(){
 async function logout(){await supabaseClient.auth.signOut();location.href="login.html"}
 async function init(){
   if(!(await requireAdmin()))return;
-  await loadMembers();await loadPayments();await loadInvoices();await loadTrainers();await loadAttendance();updateBillReference();
+  await loadMembers();await loadPayments();await loadInvoices();await loadTrainers();await loadAttendance();setBillingStartDate();updateBillReference();
 }
 init();
 </script>
