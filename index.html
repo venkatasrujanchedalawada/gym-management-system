@@ -1,154 +1,1205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
 <title>MJ Fitness | Get Fit. Don't Quit.</title>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{--yellow:#ffd400;--bg:#070707;--card:#151515;--border:#292929;--muted:#aaa}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:#fff;font-family:Arial,Helvetica,sans-serif;line-height:1.6}
-nav{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:18px 7%;background:rgba(8,8,8,.95);border-bottom:1px solid #222}
-.logo{font-size:27px;font-weight:900}.logo span,.accent{color:var(--yellow)}
-.nav-links{display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center}
-.nav-links a{text-decoration:none;color:#eee;font-weight:700}.nav-links a:hover{color:var(--yellow)}
-.login{border:1px solid var(--yellow);color:var(--yellow)!important;padding:8px 14px;border-radius:6px}
-.hero{min-height:88vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 20px;background:radial-gradient(circle at center,rgba(255,212,0,.13),transparent 35%),linear-gradient(135deg,#171717,#050505)}
-.eyebrow{color:var(--yellow);font-weight:800;letter-spacing:4px;font-size:14px;margin-bottom:14px}
-.hero h1{font-size:clamp(55px,10vw,110px);line-height:.95;letter-spacing:-3px}.hero h1 span{color:var(--yellow)}
-.hero p{font-size:22px;color:#ccc;margin:24px 0 30px}
-.btn{display:inline-block;background:var(--yellow);color:#050505;text-decoration:none;padding:14px 28px;border-radius:7px;font-weight:900}
-.btn:hover{background:#ffe45c}.btn.alt{background:transparent;color:var(--yellow);border:1px solid var(--yellow);margin-left:8px}
-section{padding:85px 7%}.section-title{text-align:center;font-size:clamp(32px,5vw,46px);margin-bottom:45px}.section-title span{color:var(--yellow)}
-.about{max-width:850px;margin:auto;text-align:center;color:#c4c4c4;font-size:18px}
-.about-grid,.cards{max-width:1100px;margin:38px auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
-.info,.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;text-align:center}.info strong{display:block;color:var(--yellow);font-size:30px}
-.trainers{background:#0d0d0d}.trainer-grid{max-width:1150px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:26px}
-.trainer-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:.25s}.trainer-card:hover{transform:translateY(-7px);border-color:var(--yellow)}
-.photo{height:310px;background:#0b0b0b}.photo img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
-.trainer-info{padding:22px}.trainer-info h3{font-size:23px;margin-bottom:5px}.spec{color:var(--yellow);font-weight:800;margin-bottom:8px}.exp{color:var(--muted);font-size:15px}
-.empty{grid-column:1/-1;text-align:center;color:#888;padding:35px;border:1px dashed #333;border-radius:12px}
-.card{transition:.2s}.card:hover{transform:translateY(-5px);border-color:var(--yellow)}.icon{font-size:42px}.card h3{margin:12px 0 8px}.card p{color:var(--muted)}
-.pricing{background:#0d0d0d}.price{font-size:32px;font-weight:900;color:var(--yellow);margin:12px 0}
-.contact{text-align:center}.contact p{color:#ccc;margin:8px}.contact .btn{margin-top:18px}
-footer{text-align:center;padding:28px;color:#777;background:#030303;border-top:1px solid #171717}
-@media(max-width:700px){nav{padding:15px 5%;flex-wrap:wrap}.nav-links{width:100%;gap:14px}.hero h1{letter-spacing:-1px}.btn.alt{display:block;width:max-content;margin:12px auto 0}section{padding:65px 6%}.photo{height:300px}}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #080808;
+    color: #ffffff;
+    line-height: 1.6;
+}
+
+/* =========================
+   COLORS
+========================= */
+
+:root {
+    --yellow: #f5c400;
+    --yellow-light: #ffd83d;
+    --black: #080808;
+    --dark: #111111;
+    --card: #151515;
+    --border: #292929;
+    --muted: #a5a5a5;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    width: 100%;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 20px 8%;
+
+    background: rgba(8, 8, 8, 0.96);
+    border-bottom: 1px solid #222;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: var(--yellow);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.25s;
+}
+
+.nav-links a:hover {
+    color: var(--yellow);
+}
+
+.login-btn {
+    border: 1px solid var(--yellow);
+    padding: 10px 18px;
+    border-radius: 7px;
+    color: var(--yellow) !important;
+}
+
+.login-btn:hover {
+    background: var(--yellow);
+    color: #000 !important;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    min-height: 88vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 60px 20px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #252525 0%,
+            #0b0b0b 48%,
+            #050505 100%
+        );
+}
+
+.hero-content {
+    max-width: 900px;
+}
+
+.hero h1 {
+    font-size: clamp(55px, 10vw, 105px);
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -3px;
+}
+
+.hero h1 span {
+    color: var(--yellow);
+}
+
+.hero p {
+    margin-top: 25px;
+
+    color: #d0d0d0;
+
+    font-size: clamp(18px, 3vw, 25px);
+}
+
+.hero-btn {
+    display: inline-block;
+
+    margin-top: 35px;
+
+    padding: 15px 32px;
+
+    background: var(--yellow);
+    color: #000;
+
+    text-decoration: none;
+
+    border-radius: 7px;
+
+    font-weight: 900;
+
+    transition: 0.25s;
+}
+
+.hero-btn:hover {
+    background: var(--yellow-light);
+    transform: translateY(-3px);
+}
+
+/* =========================
+   SECTIONS
+========================= */
+
+section {
+    padding: 90px 8%;
+}
+
+.section-title {
+    text-align: center;
+
+    font-size: clamp(32px, 5vw, 45px);
+
+    margin-bottom: 50px;
+
+    font-weight: 900;
+}
+
+.section-title span {
+    color: var(--yellow);
+}
+
+/* =========================
+   ABOUT
+========================= */
+
+.about {
+    max-width: 850px;
+
+    margin: auto;
+
+    text-align: center;
+
+    color: #bdbdbd;
+
+    font-size: 18px;
+}
+
+/* =========================
+   TRAINERS
+========================= */
+
+.trainers-section {
+    background: #0d0d0d;
+}
+
+.trainer-grid {
+    max-width: 1200px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(280px, 1fr));
+
+    gap: 28px;
+}
+
+/* Professional trainer card */
+
+.trainer-card {
+    background: #151515;
+
+    border: 1px solid #292929;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.trainer-card:hover {
+    transform: translateY(-8px);
+
+    border-color: var(--yellow);
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* Photo area */
+
+.trainer-photo {
+    width: 100%;
+    height: 320px;
+
+    background: #202020;
+
+    overflow: hidden;
+}
+
+.trainer-photo img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+    object-position: center;
+
+    transition: transform 0.4s ease;
+}
+
+.trainer-card:hover .trainer-photo img {
+    transform: scale(1.04);
+}
+
+/* Trainer information */
+
+.trainer-info {
+    padding: 23px;
+}
+
+.trainer-name {
+    font-size: 24px;
+
+    font-weight: 900;
+
+    margin-bottom: 5px;
+}
+
+.trainer-specialization {
+    color: var(--yellow);
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+}
+
+.trainer-experience {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 15px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid #292929;
+
+    color: #bdbdbd;
+
+    font-size: 14px;
+}
+
+.experience-icon {
+    color: var(--yellow);
+}
+
+/* =========================
+   WHY MJ FITNESS
+========================= */
+
+.feature-grid {
+    max-width: 1200px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(220px, 1fr));
+
+    gap: 25px;
+}
+
+.feature-card {
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    transition: 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-6px);
+
+    border-color: var(--yellow);
+}
+
+.feature-icon {
+    font-size: 42px;
+
+    margin-bottom: 15px;
+}
+
+.feature-card h3 {
+    margin-bottom: 10px;
+
+    font-size: 21px;
+}
+
+.feature-card p {
+    color: #999;
+
+    font-size: 15px;
+}
+
+/* =========================
+   MEMBERSHIP PLANS
+========================= */
+
+.plans-section {
+    background: #101010;
+}
+
+.plan-grid {
+    max-width: 1100px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(250px, 1fr));
+
+    gap: 25px;
+}
+
+.plan-card {
+    position: relative;
+
+    background: #151515;
+
+    border: 1px solid #292929;
+
+    border-radius: 15px;
+
+    padding: 32px;
+
+    text-align: center;
+
+    transition: 0.3s;
+}
+
+.plan-card:hover {
+    transform: translateY(-7px);
+
+    border-color: var(--yellow);
+}
+
+.plan-card h3 {
+    font-size: 23px;
+
+    margin-bottom: 10px;
+}
+
+.plan-price {
+    font-size: 36px;
+
+    font-weight: 900;
+
+    color: var(--yellow);
+
+    margin: 15px 0;
+}
+
+.plan-duration {
+    color: #aaa;
+
+    font-size: 15px;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading {
+    text-align: center;
+
+    color: #888;
+
+    padding: 30px;
+
+    grid-column: 1 / -1;
+}
+
+/* =========================
+   ERROR
+========================= */
+
+.error-message {
+    text-align: center;
+
+    color: #aaa;
+
+    padding: 30px;
+
+    grid-column: 1 / -1;
+}
+
+/* =========================
+   CONTACT
+========================= */
+
+.contact {
+    text-align: center;
+}
+
+.contact p {
+    color: #bbb;
+
+    margin: 10px 0;
+
+    font-size: 17px;
+}
+
+.contact-btn {
+    display: inline-block;
+
+    margin-top: 20px;
+
+    padding: 14px 30px;
+
+    background: var(--yellow);
+
+    color: #000;
+
+    text-decoration: none;
+
+    border-radius: 7px;
+
+    font-weight: 900;
+}
+
+.contact-btn:hover {
+    background: var(--yellow-light);
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    text-align: center;
+
+    padding: 28px;
+
+    background: #050505;
+
+    color: #666;
+
+    border-top: 1px solid #181818;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    nav {
+        flex-direction: column;
+
+        gap: 15px;
+
+        padding: 18px 5%;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+
+        justify-content: center;
+
+        gap: 15px;
+    }
+
+    .nav-links a {
+        font-size: 14px;
+    }
+
+    section {
+        padding: 65px 5%;
+    }
+
+    .hero {
+        min-height: 80vh;
+    }
+
+    .trainer-photo {
+        height: 300px;
+    }
+
+}
+
 </style>
+
 </head>
+
 <body>
+
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
 <nav>
-<div class="logo">MJ <span>FITNESS</span></div>
-<div class="nav-links">
-<a href="#about">About</a><a href="#trainers">Trainers</a><a href="#plans">Plans</a><a href="#contact">Contact</a>
-<a href="login.html" class="login">Member Login</a>
-</div>
+
+    <div class="logo">
+        MJ <span>FITNESS</span>
+    </div>
+
+    <div class="nav-links">
+
+        <a href="#about">
+            About
+        </a>
+
+        <a href="#trainers">
+            Trainers
+        </a>
+
+        <a href="#plans">
+            Plans
+        </a>
+
+        <a href="#contact">
+            Contact
+        </a>
+
+        <a
+            href="login.html"
+            class="login-btn"
+        >
+            Member Login
+        </a>
+
+    </div>
+
 </nav>
 
+
+<!-- =========================
+     HERO
+========================= -->
+
 <section class="hero">
-<div>
-<div class="eyebrow">TRAIN. IMPROVE. REPEAT.</div>
-<h1>MJ <span>FITNESS</span></h1>
-<p>Get Fit. Don't Quit.</p>
-<a href="#plans" class="btn">View Memberships</a>
-<a href="#trainers" class="btn alt">Meet Our Trainers</a>
-</div>
+
+    <div class="hero-content">
+
+        <h1>
+            MJ <span>FITNESS</span>
+        </h1>
+
+        <p>
+            Get Fit. Don't Quit.
+        </p>
+
+        <a
+            href="#plans"
+            class="hero-btn"
+        >
+            View Memberships
+        </a>
+
+    </div>
+
 </section>
+
+
+<!-- =========================
+     ABOUT
+========================= -->
 
 <section id="about">
-<h2 class="section-title">About <span>MJ Fitness</span></h2>
-<div class="about">
-<p>Welcome to MJ Fitness — a focused training environment built to help you become stronger, healthier and more confident through consistent training, expert guidance and the right atmosphere.</p>
-<div class="about-grid">
-<div class="info"><strong>01</strong>Expert Guidance</div>
-<div class="info"><strong>02</strong>Quality Equipment</div>
-<div class="info"><strong>03</strong>Goal Focused</div>
-</div>
-</div>
+
+    <h2 class="section-title">
+        About <span>MJ Fitness</span>
+    </h2>
+
+    <div class="about">
+
+        <p>
+            Welcome to MJ Fitness, a modern fitness destination
+            focused on helping you become stronger, healthier and
+            more confident.
+
+            With the right environment, professional guidance and
+            consistency, your fitness goals become achievable.
+        </p>
+
+    </div>
+
 </section>
 
-<section id="trainers" class="trainers">
-<h2 class="section-title">Our <span>Trainers</span></h2>
-<div id="trainerGrid" class="trainer-grid"><div class="empty">Loading trainers...</div></div>
+
+<!-- =========================
+     TRAINERS
+========================= -->
+
+<section
+    id="trainers"
+    class="trainers-section"
+>
+
+    <h2 class="section-title">
+        Our <span>Trainers</span>
+    </h2>
+
+    <div
+        id="trainerGrid"
+        class="trainer-grid"
+    >
+
+        <div class="loading">
+            Loading trainers...
+        </div>
+
+    </div>
+
 </section>
+
+
+<!-- =========================
+     WHY MJ FITNESS
+========================= -->
 
 <section>
-<h2 class="section-title">Why <span>Choose Us?</span></h2>
-<div class="cards">
-<div class="card"><div class="icon">🏋️</div><h3>Modern Equipment</h3><p>Quality equipment for effective and consistent workouts.</p></div>
-<div class="card"><div class="icon">👨‍🏫</div><h3>Expert Trainers</h3><p>Get guidance from trainers who understand your goals.</p></div>
-<div class="card"><div class="icon">⚡</div><h3>Energetic Environment</h3><p>A motivating environment that keeps you moving forward.</p></div>
-<div class="card"><div class="icon">🎯</div><h3>Goal Focused</h3><p>Build consistency and work towards meaningful results.</p></div>
-</div>
+
+    <h2 class="section-title">
+        Why <span>Choose Us?</span>
+    </h2>
+
+    <div class="feature-grid">
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                🏋️
+            </div>
+
+            <h3>
+                Modern Equipment
+            </h3>
+
+            <p>
+                Quality equipment designed for effective
+                and comfortable workouts.
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                👨‍🏫
+            </div>
+
+            <h3>
+                Expert Trainers
+            </h3>
+
+            <p>
+                Get proper guidance from experienced
+                fitness professionals.
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                ⚡
+            </div>
+
+            <h3>
+                Energetic Environment
+            </h3>
+
+            <p>
+                A motivating atmosphere that keeps you
+                focused on your fitness journey.
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                🎯
+            </div>
+
+            <h3>
+                Goal Focused
+            </h3>
+
+            <p>
+                Train consistently and work towards
+                your personal fitness goals.
+            </p>
+
+        </div>
+
+    </div>
+
 </section>
 
-<section id="plans" class="pricing">
-<h2 class="section-title">Membership <span>Plans</span></h2>
-<div id="plansGrid" class="cards">
-<div class="empty">Loading membership plans...</div>
-</div>
+
+<!-- =========================
+     MEMBERSHIP PLANS
+========================= -->
+
+<section
+    id="plans"
+    class="plans-section"
+>
+
+    <h2 class="section-title">
+        Membership <span>Plans</span>
+    </h2>
+
+    <div
+        id="planGrid"
+        class="plan-grid"
+    >
+
+        <div class="loading">
+            Loading membership plans...
+        </div>
+
+    </div>
+
 </section>
 
-<section id="contact" class="contact">
-<h2 class="section-title">Contact <span>Us</span></h2>
-<p>📍 Chennai, Tamil Nadu</p><p>📞 9999999999</p>
-<a href="tel:9999999999" class="btn">Call MJ Fitness</a>
+
+<!-- =========================
+     CONTACT
+========================= -->
+
+<section
+    id="contact"
+    class="contact"
+>
+
+    <h2 class="section-title">
+        Contact <span>Us</span>
+    </h2>
+
+    <p>
+        📍 Chennai, Tamil Nadu
+    </p>
+
+    <p>
+        📞 9999999999
+    </p>
+
+    <a
+        href="tel:9999999999"
+        class="contact-btn"
+    >
+        Call MJ Fitness
+    </a>
+
 </section>
 
-<footer>© 2026 MJ Fitness. All Rights Reserved.</footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    © 2026 MJ Fitness.
+    All Rights Reserved.
+
+</footer>
+
+
 <script>
-const SUPABASE_URL="https://hwcvzgnldnnvpzqaprmr.supabase.co";
-const SUPABASE_ANON_KEY="sb_publishable__p2vDp05-aQKlAjGbp8vqw_7c9fyHtK";
-const grid=document.getElementById("trainerGrid");
-let db=null;
 
-function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+/* =====================================================
+   SUPABASE CONFIGURATION
+===================================================== */
+
+/*
+   KEEP YOUR EXISTING SUPABASE URL AND ANON/PUBLISHABLE KEY
+   HERE.
+
+   Do NOT use the service_role key in your website.
+*/
+
+const SUPABASE_URL =
+    "https://hwcvzgnldnnvpzqaprmr.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable__p2vDp05-aQKlAjGbp8vqw_7c9fyHtK";
 
 
-async function loadMembershipPlans(db){
-try{
-const {data,error}=await db.from("membership_plans")
-.select("name,duration_days,price,is_active")
-.eq("is_active",true)
-.order("plan_id",{ascending:true});
-if(error)throw error;
-const grid=document.getElementById("plansGrid");
-if(!data?.length){grid.innerHTML='<div class="empty">Membership plans will be available soon.</div>';return;}
-grid.innerHTML=data.map(p=>`
-<div class="card">
-<h3>${esc(p.name)}</h3>
-<div class="price">₹${Number(p.price).toLocaleString("en-IN")}</div>
-<p>${Number(p.duration_days)} Day Membership</p>
-</div>`).join("");
-}catch(e){
-console.error("Unable to load membership plans:",e);
-document.getElementById("plansGrid").innerHTML='<div class="empty">Membership plans are temporarily unavailable.</div>';
-}
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =====================================================
+   TRAINERS
+===================================================== */
+
+async function loadTrainers() {
+
+    const trainerGrid =
+        document.getElementById("trainerGrid");
+
+    try {
+
+        const { data, error } =
+            await supabaseClient
+                .from("trainers")
+                .select(`
+                    trainer_id,
+                    name,
+                    specialization,
+                    experience_years,
+                    photo_url
+                `)
+                .eq("is_active", true)
+                .order("trainer_id", {
+                    ascending: true
+                });
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!data || data.length === 0) {
+
+            trainerGrid.innerHTML = `
+                <div class="error-message">
+                    No trainers available right now.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        trainerGrid.innerHTML = "";
+
+
+        data.forEach(trainer => {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "trainer-card";
+
+
+            const photo =
+                trainer.photo_url
+                    ? trainer.photo_url
+                    : "https://via.placeholder.com/600x600?text=MJ+Fitness";
+
+
+            const experience =
+                trainer.experience_years !== null &&
+                trainer.experience_years !== undefined
+                    ? `${trainer.experience_years} Years Experience`
+                    : "Experienced Trainer";
+
+
+            card.innerHTML = `
+
+                <div class="trainer-photo">
+
+                    <img
+                        src="${escapeHTML(photo)}"
+                        alt="${escapeHTML(trainer.name)}"
+                        loading="lazy"
+                    >
+
+                </div>
+
+
+                <div class="trainer-info">
+
+                    <div class="trainer-name">
+                        ${escapeHTML(trainer.name)}
+                    </div>
+
+                    <div class="trainer-specialization">
+                        ${escapeHTML(
+                            trainer.specialization ||
+                            "Fitness Trainer"
+                        )}
+                    </div>
+
+                    <div class="trainer-experience">
+
+                        <span class="experience-icon">
+                            ★
+                        </span>
+
+                        <span>
+                            ${escapeHTML(experience)}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            trainerGrid.appendChild(card);
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Trainer loading error:",
+            error
+        );
+
+
+        trainerGrid.innerHTML = `
+
+            <div class="error-message">
+
+                Unable to load trainers right now.
+
+            </div>
+
+        `;
+
+    }
+
 }
 
-async function loadTrainers(){
-try{
-if(SUPABASE_URL==="YOUR_SUPABASE_URL"||SUPABASE_ANON_KEY==="YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY"){
-grid.innerHTML='<div class="empty">Connect Supabase to load trainers.</div>';return;
+
+/* =====================================================
+   MEMBERSHIP PLANS
+===================================================== */
+
+async function loadPlans() {
+
+    const planGrid =
+        document.getElementById("planGrid");
+
+
+    try {
+
+        const { data, error } =
+            await supabaseClient
+                .from("membership_plans")
+                .select("*")
+                .eq("is_active", true);
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!data || data.length === 0) {
+
+            planGrid.innerHTML = `
+
+                <div class="error-message">
+
+                    No membership plans available right now.
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+
+        planGrid.innerHTML = "";
+
+
+        data.forEach(plan => {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "plan-card";
+
+
+            /*
+               Supports the common plan-name fields.
+               Your existing database can continue
+               using its current column names.
+            */
+
+            const planName =
+                plan.plan_name ||
+                plan.name ||
+                plan.package ||
+                "Membership";
+
+
+            const price =
+                plan.price ??
+                plan.amount ??
+                plan.standard_amount ??
+                0;
+
+
+            const duration =
+                plan.duration_days ??
+                plan.days ??
+                plan.duration ??
+                "";
+
+
+            let durationText =
+                "Membership";
+
+
+            if (duration) {
+
+                durationText =
+                    `${duration} Days Membership`;
+
+            }
+
+
+            card.innerHTML = `
+
+                <h3>
+                    ${escapeHTML(planName)}
+                </h3>
+
+                <div class="plan-price">
+                    ₹${Number(price).toLocaleString("en-IN")}
+                </div>
+
+                <div class="plan-duration">
+                    ${escapeHTML(
+                        String(durationText)
+                    )}
+                </div>
+
+            `;
+
+
+            planGrid.appendChild(card);
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Membership plan loading error:",
+            error
+        );
+
+
+        planGrid.innerHTML = `
+
+            <div class="error-message">
+
+                Membership plans are temporarily unavailable.
+
+            </div>
+
+        `;
+
+    }
+
 }
-db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-const {data,error}=await db.from("trainers").select("trainer_id,name,specialization,experience_years,photo_url,is_active").eq("is_active",true).order("trainer_id",{ascending:true});
-if(error)throw error;
-if(!data?.length){grid.innerHTML='<div class="empty">Our trainer profiles will be available soon.</div>';return;}
-grid.innerHTML=data.map(t=>`
-<article class="trainer-card">
-<div class="photo">${t.photo_url?`<img src="${esc(t.photo_url)}" alt="${esc(t.name)}" loading="lazy">`:`<div style="height:100%;display:grid;place-items:center;font-size:60px">🏋️</div>`}</div>
-<div class="trainer-info">
-<h3>${esc(t.name)}</h3>
-<p class="spec">${esc(t.specialization||"Fitness Trainer")}</p>
-<p class="exp">💼 ${Number(t.experience_years||0)} ${Number(t.experience_years||0)===1?"Year":"Years"} Experience</p>
-</div>
-</article>`).join("");
-}catch(e){console.error(e);grid.innerHTML='<div class="empty">Trainer information is temporarily unavailable.</div>'}
+
+
+/* =====================================================
+   BASIC HTML ESCAPING
+===================================================== */
+
+function escapeHTML(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
 }
-loadTrainers().then(()=>loadMembershipPlans(db));
+
+
+/* =====================================================
+   START
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        loadTrainers();
+
+        loadPlans();
+
+    }
+);
+
 </script>
+
 </body>
 </html>
