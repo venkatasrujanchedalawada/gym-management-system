@@ -2,103 +2,153 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AV Fitness | Get Fit. Don't Quit.</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MJ Fitness | Get Fit. Don't Quit.</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:#0b0b0b;color:#fff;line-height:1.6}
-nav{display:flex;justify-content:space-between;align-items:center;padding:20px 8%;background:#111;position:sticky;top:0;z-index:1000}
-.logo{font-size:28px;font-weight:bold}.logo span{color:#ff3b30}
-nav a{color:#fff;text-decoration:none;margin-left:25px;font-weight:bold}nav a:hover{color:#ff3b30}
-.hero{min-height:90vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px 20px;background:linear-gradient(rgba(0,0,0,.65),rgba(0,0,0,.8)),radial-gradient(circle at center,#333,#050505)}
-.hero h1{font-size:clamp(45px,8vw,90px);font-weight:900}.hero h1 span{color:#ff3b30}.hero p{font-size:22px;margin:20px 0 30px;color:#ddd}
-.btn{display:inline-block;padding:14px 30px;background:#ff3b30;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;transition:.3s}.btn:hover{background:#ff6259;transform:translateY(-2px)}
-section{padding:80px 8%}.section-title{text-align:center;font-size:40px;margin-bottom:45px}.section-title span{color:#ff3b30}
-.about{max-width:900px;margin:auto;text-align:center;color:#ccc;font-size:18px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:25px}
-.card{background:#151515;padding:30px;border-radius:12px;text-align:center;border:1px solid #252525;transition:.3s}.card:hover{transform:translateY(-7px);border-color:#ff3b30}
-.card h3{margin:15px 0 10px;font-size:22px}.card p{color:#aaa}.icon{font-size:45px}
-.price{font-size:32px;font-weight:bold;color:#ff3b30;margin:15px 0}.pricing{background:#101010}.contact{text-align:center}.contact p{margin:10px 0;color:#ccc}
-.trainer-card{overflow:hidden;padding:0}.trainer-photo{width:100%;height:320px;object-fit:cover;display:block;background:#222}.trainer-info{padding:25px}.trainer-info h3{margin:0 0 7px}.trainer-info p{margin:5px 0}.experience{color:#ff3b30!important;font-weight:bold}.trainer-placeholder{height:320px;background:#222;display:flex;align-items:center;justify-content:center;font-size:75px}
-.loading,.empty-state{grid-column:1/-1;text-align:center;color:#999;padding:35px}
-footer{text-align:center;padding:25px;background:#050505;color:#777}
-@media(max-width:700px){nav{flex-direction:column;gap:15px}nav a{margin:0 8px;font-size:14px}section{padding:60px 6%}.trainer-photo,.trainer-placeholder{height:280px}}
+:root{--yellow:#ffd400;--bg:#070707;--card:#151515;--border:#292929;--muted:#aaa}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:#fff;font-family:Arial,Helvetica,sans-serif;line-height:1.6}
+nav{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:18px 7%;background:rgba(8,8,8,.95);border-bottom:1px solid #222}
+.logo{font-size:27px;font-weight:900}.logo span,.accent{color:var(--yellow)}
+.nav-links{display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center}
+.nav-links a{text-decoration:none;color:#eee;font-weight:700}.nav-links a:hover{color:var(--yellow)}
+.login{border:1px solid var(--yellow);color:var(--yellow)!important;padding:8px 14px;border-radius:6px}
+.hero{min-height:88vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 20px;background:radial-gradient(circle at center,rgba(255,212,0,.13),transparent 35%),linear-gradient(135deg,#171717,#050505)}
+.eyebrow{color:var(--yellow);font-weight:800;letter-spacing:4px;font-size:14px;margin-bottom:14px}
+.hero h1{font-size:clamp(55px,10vw,110px);line-height:.95;letter-spacing:-3px}.hero h1 span{color:var(--yellow)}
+.hero p{font-size:22px;color:#ccc;margin:24px 0 30px}
+.btn{display:inline-block;background:var(--yellow);color:#050505;text-decoration:none;padding:14px 28px;border-radius:7px;font-weight:900}
+.btn:hover{background:#ffe45c}.btn.alt{background:transparent;color:var(--yellow);border:1px solid var(--yellow);margin-left:8px}
+section{padding:85px 7%}.section-title{text-align:center;font-size:clamp(32px,5vw,46px);margin-bottom:45px}.section-title span{color:var(--yellow)}
+.about{max-width:850px;margin:auto;text-align:center;color:#c4c4c4;font-size:18px}
+.about-grid,.cards{max-width:1100px;margin:38px auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+.info,.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;text-align:center}.info strong{display:block;color:var(--yellow);font-size:30px}
+.trainers{background:#0d0d0d}.trainer-grid{max-width:1150px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:26px}
+.trainer-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:.25s}.trainer-card:hover{transform:translateY(-7px);border-color:var(--yellow)}
+.photo{height:310px;background:#0b0b0b}.photo img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.trainer-info{padding:22px}.trainer-info h3{font-size:23px;margin-bottom:5px}.spec{color:var(--yellow);font-weight:800;margin-bottom:8px}.exp{color:var(--muted);font-size:15px}
+.empty{grid-column:1/-1;text-align:center;color:#888;padding:35px;border:1px dashed #333;border-radius:12px}
+.card{transition:.2s}.card:hover{transform:translateY(-5px);border-color:var(--yellow)}.icon{font-size:42px}.card h3{margin:12px 0 8px}.card p{color:var(--muted)}
+.pricing{background:#0d0d0d}.price{font-size:32px;font-weight:900;color:var(--yellow);margin:12px 0}
+.contact{text-align:center}.contact p{color:#ccc;margin:8px}.contact .btn{margin-top:18px}
+footer{text-align:center;padding:28px;color:#777;background:#030303;border-top:1px solid #171717}
+@media(max-width:700px){nav{padding:15px 5%;flex-wrap:wrap}.nav-links{width:100%;gap:14px}.hero h1{letter-spacing:-1px}.btn.alt{display:block;width:max-content;margin:12px auto 0}section{padding:65px 6%}.photo{height:300px}}
 </style>
 </head>
 <body>
-
 <nav>
-<div class="logo">AV <span>FITNESS</span></div>
-<div>
-<a href="#about">About</a>
-<a href="#trainers">Trainers</a>
-<a href="#plans">Plans</a>
-<a href="#contact">Contact</a>
-<a href="login.html">Member Login</a>
+<div class="logo">MJ <span>FITNESS</span></div>
+<div class="nav-links">
+<a href="#about">About</a><a href="#trainers">Trainers</a><a href="#plans">Plans</a><a href="#contact">Contact</a>
+<a href="login.html" class="login">Member Login</a>
 </div>
 </nav>
 
 <section class="hero">
-<div><h1>AV <span>FITNESS</span></h1><p>Get Fit. Don't Quit.</p><a href="#plans" class="btn">View Memberships</a></div>
+<div>
+<div class="eyebrow">TRAIN. IMPROVE. REPEAT.</div>
+<h1>MJ <span>FITNESS</span></h1>
+<p>Get Fit. Don't Quit.</p>
+<a href="#plans" class="btn">View Memberships</a>
+<a href="#trainers" class="btn alt">Meet Our Trainers</a>
+</div>
 </section>
 
 <section id="about">
-<h2 class="section-title">About <span>AV Fitness</span></h2>
-<div class="about"><p>Welcome to AV Fitness, a modern fitness destination in Chennai. Our goal is simple — help you become stronger, healthier and more confident with the right environment, guidance and consistency.</p></div>
+<h2 class="section-title">About <span>MJ Fitness</span></h2>
+<div class="about">
+<p>Welcome to MJ Fitness — a focused training environment built to help you become stronger, healthier and more confident through consistent training, expert guidance and the right atmosphere.</p>
+<div class="about-grid">
+<div class="info"><strong>01</strong>Expert Guidance</div>
+<div class="info"><strong>02</strong>Quality Equipment</div>
+<div class="info"><strong>03</strong>Goal Focused</div>
+</div>
+</div>
 </section>
 
-<section id="trainers">
+<section id="trainers" class="trainers">
 <h2 class="section-title">Our <span>Trainers</span></h2>
-<div class="cards" id="trainerCards"><div class="loading">Loading trainers...</div></div>
+<div id="trainerGrid" class="trainer-grid"><div class="empty">Loading trainers...</div></div>
 </section>
 
 <section>
 <h2 class="section-title">Why <span>Choose Us?</span></h2>
 <div class="cards">
-<div class="card"><div class="icon">🏋️</div><h3>Modern Equipment</h3><p>Quality equipment for effective workouts.</p></div>
-<div class="card"><div class="icon">👨‍🏫</div><h3>Expert Trainers</h3><p>Get guidance from experienced trainers.</p></div>
-<div class="card"><div class="icon">⚡</div><h3>Energetic Environment</h3><p>A motivating environment to keep you moving.</p></div>
-<div class="card"><div class="icon">🎯</div><h3>Goal Focused</h3><p>Train consistently and work towards your goals.</p></div>
+<div class="card"><div class="icon">🏋️</div><h3>Modern Equipment</h3><p>Quality equipment for effective and consistent workouts.</p></div>
+<div class="card"><div class="icon">👨‍🏫</div><h3>Expert Trainers</h3><p>Get guidance from trainers who understand your goals.</p></div>
+<div class="card"><div class="icon">⚡</div><h3>Energetic Environment</h3><p>A motivating environment that keeps you moving forward.</p></div>
+<div class="card"><div class="icon">🎯</div><h3>Goal Focused</h3><p>Build consistency and work towards meaningful results.</p></div>
 </div>
 </section>
 
 <section id="plans" class="pricing">
 <h2 class="section-title">Membership <span>Plans</span></h2>
-<div class="cards">
-<div class="card"><h3>Monthly</h3><div class="price">₹1,499</div><p>1 Month Membership</p></div>
-<div class="card"><h3>Quarterly</h3><div class="price">₹2,999</div><p>3 Month Membership</p></div>
-<div class="card"><h3>Annual</h3><div class="price">₹6,999</div><p>12 Month Membership</p></div>
+<div id="plansGrid" class="cards">
+<div class="empty">Loading membership plans...</div>
 </div>
 </section>
 
 <section id="contact" class="contact">
 <h2 class="section-title">Contact <span>Us</span></h2>
-<p>📍 Chennai, Tamil Nadu</p><p>📞 9999999999</p><br>
-<a href="tel:9999999999" class="btn">Call AV Fitness</a>
+<p>📍 Chennai, Tamil Nadu</p><p>📞 9999999999</p>
+<a href="tel:9999999999" class="btn">Call MJ Fitness</a>
 </section>
 
-<footer>© 2026 AV Fitness. All Rights Reserved.</footer>
+<footer>© 2026 MJ Fitness. All Rights Reserved.</footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL="https://hwcvzgnldnnvpzqaprmr.supabase.co";
-const SUPABASE_KEY="sb_publishable__p2vDp05-aQKlAjGbp8vqw_7c9fyHtK";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const SUPABASE_URL="YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY="YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
+const grid=document.getElementById("trainerGrid");
+let db=null;
 
 function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 
-async function loadTrainers(){
- const box=document.getElementById("trainerCards");
- const {data,error}=await supabaseClient.from("trainers").select("name,specialization,experience_years,photo_url").eq("is_active",true).order("trainer_id",{ascending:true});
- if(error){console.error(error);box.innerHTML='<div class="empty-state">Trainer information is currently unavailable.</div>';return}
- if(!data?.length){box.innerHTML='<div class="empty-state">Our trainer information will be available here soon.</div>';return}
- box.innerHTML=data.map(t=>{
-   const photo=t.photo_url?`<img class="trainer-photo" src="${esc(t.photo_url)}" alt="${esc(t.name)}">`:'<div class="trainer-placeholder">🏋️</div>';
-   const years=Number(t.experience_years||0);
-   return `<div class="card trainer-card">${photo}<div class="trainer-info"><h3>${esc(t.name)}</h3><p>${esc(t.specialization||"Fitness Trainer")}</p>${years?`<p class="experience">${years} ${years===1?"Year":"Years"} Experience</p>`:""}</div></div>`;
- }).join("");
+
+async function loadMembershipPlans(db){
+try{
+const {data,error}=await db.from("membership_plans")
+.select("name,duration_days,price,is_active")
+.eq("is_active",true)
+.order("plan_id",{ascending:true});
+if(error)throw error;
+const grid=document.getElementById("plansGrid");
+if(!data?.length){grid.innerHTML='<div class="empty">Membership plans will be available soon.</div>';return;}
+grid.innerHTML=data.map(p=>`
+<div class="card">
+<h3>${esc(p.name)}</h3>
+<div class="price">₹${Number(p.price).toLocaleString("en-IN")}</div>
+<p>${Number(p.duration_days)} Day Membership</p>
+</div>`).join("");
+}catch(e){
+console.error("Unable to load membership plans:",e);
+document.getElementById("plansGrid").innerHTML='<div class="empty">Membership plans are temporarily unavailable.</div>';
 }
-loadTrainers();
+}
+
+async function loadTrainers(){
+try{
+if(SUPABASE_URL==="YOUR_SUPABASE_URL"||SUPABASE_ANON_KEY==="YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY"){
+grid.innerHTML='<div class="empty">Connect Supabase to load trainers.</div>';return;
+}
+db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const {data,error}=await db.from("trainers").select("trainer_id,name,specialization,experience_years,photo_url,is_active").eq("is_active",true).order("trainer_id",{ascending:true});
+if(error)throw error;
+if(!data?.length){grid.innerHTML='<div class="empty">Our trainer profiles will be available soon.</div>';return;}
+grid.innerHTML=data.map(t=>`
+<article class="trainer-card">
+<div class="photo">${t.photo_url?`<img src="${esc(t.photo_url)}" alt="${esc(t.name)}" loading="lazy">`:`<div style="height:100%;display:grid;place-items:center;font-size:60px">🏋️</div>`}</div>
+<div class="trainer-info">
+<h3>${esc(t.name)}</h3>
+<p class="spec">${esc(t.specialization||"Fitness Trainer")}</p>
+<p class="exp">💼 ${Number(t.experience_years||0)} ${Number(t.experience_years||0)===1?"Year":"Years"} Experience</p>
+</div>
+</article>`).join("");
+}catch(e){console.error(e);grid.innerHTML='<div class="empty">Trainer information is temporarily unavailable.</div>'}
+}
+loadTrainers().then(()=>loadMembershipPlans(db));
 </script>
 </body>
 </html>
