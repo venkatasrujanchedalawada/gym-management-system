@@ -12,8 +12,6 @@
 
     <title>AV Fitness | Admin</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
 
         * {
@@ -25,72 +23,115 @@
         body {
             font-family: Arial, sans-serif;
             background: #0b0b0b;
-            color: white;
+            color: #ffffff;
         }
 
-        nav {
-            background: #111;
-            border-bottom: 1px solid #292929;
+        /* SIDEBAR */
 
-            padding: 18px 7%;
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            width: 250px;
+            height: 100vh;
+
+            background: #111111;
+            border-right: 1px solid #292929;
+
+            padding: 25px 15px;
+
+            z-index: 100;
         }
 
         .logo {
             font-size: 25px;
             font-weight: bold;
+
+            padding: 0 15px 30px;
         }
 
         .logo span {
             color: #ff3b30;
         }
 
-        button {
-            background: #ff3b30;
-            color: white;
+        .nav-button {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 13px 15px;
+
+            margin-bottom: 6px;
+
+            background: transparent;
+            color: #aaa;
 
             border: none;
-            border-radius: 7px;
+            border-radius: 8px;
 
-            padding: 11px 18px;
-
-            font-weight: bold;
             cursor: pointer;
+
+            font-size: 15px;
+            text-align: left;
         }
 
-        button:hover {
-            opacity: 0.9;
+        .nav-button:hover {
+            background: #1d1d1d;
+            color: white;
         }
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .nav-button.active {
+            background: #ff3b30;
+            color: white;
         }
 
-        main {
-            width: 86%;
-            max-width: 1200px;
+        .logout {
+            position: absolute;
 
-            margin: 0 auto;
+            bottom: 25px;
+            left: 15px;
 
-            padding: 40px 0;
+            width: calc(100% - 30px);
+
+            background: #1d1d1d;
         }
 
-        .welcome {
+        /* MAIN */
+
+        .main {
+            margin-left: 250px;
+
+            min-height: 100vh;
+
+            padding: 35px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-header {
             margin-bottom: 30px;
         }
 
-        .welcome h1 {
-            font-size: 36px;
+        .page-header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
         }
 
-        .welcome p {
-            color: #999;
-            margin-top: 8px;
+        .page-header p {
+            color: #888;
         }
+
+        /* CARDS */
 
         .stats {
             display: grid;
@@ -103,7 +144,7 @@
             margin-bottom: 25px;
         }
 
-        .stat {
+        .card {
             background: #151515;
 
             border: 1px solid #292929;
@@ -112,20 +153,26 @@
             padding: 22px;
         }
 
-        .stat-title {
-            color: #999;
+        .card-title {
+            color: #888;
+
+            font-size: 14px;
+
             margin-bottom: 10px;
         }
 
-        .stat-number {
+        .card-value {
             font-size: 30px;
             font-weight: bold;
         }
+
+        /* SECTION */
 
         .section {
             background: #151515;
 
             border: 1px solid #292929;
+
             border-radius: 12px;
 
             padding: 25px;
@@ -133,52 +180,83 @@
             margin-bottom: 25px;
         }
 
-        .section-title {
+        .section-header {
             display: flex;
+
             justify-content: space-between;
             align-items: center;
-
-            gap: 15px;
 
             margin-bottom: 20px;
         }
 
-        .section-title h2 {
-            font-size: 22px;
+        .section-header h2 {
+            font-size: 20px;
         }
 
-        .member {
-            border-top: 1px solid #292929;
+        /* BUTTONS */
 
-            padding: 17px 0;
+        .primary {
+            background: #ff3b30;
+            color: white;
 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border: none;
 
-            gap: 15px;
-        }
+            border-radius: 7px;
 
-        .member-name {
-            font-weight: bold;
-            margin-bottom: 6px;
-        }
+            padding: 11px 18px;
 
-        .member-details {
-            color: #999;
-            font-size: 14px;
-            line-height: 1.6;
-        }
+            cursor: pointer;
 
-        .active {
-            color: #65df83;
             font-weight: bold;
         }
 
-        .expired {
-            color: #ff6b6b;
-            font-weight: bold;
+        .secondary {
+            background: #222;
+            color: white;
+
+            border: 1px solid #333;
+
+            border-radius: 7px;
+
+            padding: 11px 18px;
+
+            cursor: pointer;
         }
+
+        /* TABLE */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 700px;
+        }
+
+        th,
+        td {
+            padding: 14px;
+
+            border-bottom: 1px solid #292929;
+
+            text-align: left;
+        }
+
+        th {
+            color: #888;
+
+            font-size: 13px;
+        }
+
+        td {
+            color: #ddd;
+        }
+
+        /* FORM */
 
         .form-grid {
             display: grid;
@@ -191,97 +269,146 @@
 
         .form-group {
             display: flex;
+
             flex-direction: column;
+
             gap: 7px;
         }
 
-        .form-group.full {
+        .full {
             grid-column: 1 / -1;
         }
 
         label {
-            color: #ccc;
+            color: #aaa;
+
             font-size: 14px;
         }
 
         input,
-        select {
+        select,
+        textarea {
             width: 100%;
 
             padding: 13px;
 
             background: #0d0d0d;
+
             color: white;
 
             border: 1px solid #333;
+
             border-radius: 7px;
 
             font-size: 15px;
         }
 
+        textarea {
+            min-height: 100px;
+
+            resize: vertical;
+        }
+
         input:focus,
-        select:focus {
+        select:focus,
+        textarea:focus {
             outline: none;
+
             border-color: #ff3b30;
         }
 
-        .amount-box {
-            background: #0d0d0d;
+        /* BADGES */
 
-            border: 1px solid #333;
-            border-radius: 7px;
+        .badge {
+            display: inline-block;
 
-            padding: 13px;
+            padding: 5px 9px;
 
-            font-weight: bold;
+            border-radius: 20px;
+
+            font-size: 12px;
         }
 
-        .form-actions {
-            margin-top: 22px;
+        .badge-active {
+            background: #173d24;
+
+            color: #69df8a;
         }
 
-        .message {
-            margin-top: 15px;
-            min-height: 20px;
-            color: #aaa;
+        .badge-expired {
+            background: #3d1717;
+
+            color: #ff7777;
         }
 
-        .loading {
+        /* EMPTY */
+
+        .empty {
             text-align: center;
-            padding: 70px 20px;
-            color: #aaa;
+
+            padding: 45px 20px;
+
+            color: #777;
         }
 
-        .hidden {
+        /* MOBILE */
+
+        .mobile-header {
             display: none;
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+
+                padding: 25px;
+            }
+
         }
 
         @media (max-width: 650px) {
 
-            main {
-                width: 92%;
+            .sidebar {
+                display: none;
             }
 
-            .welcome h1 {
-                font-size: 30px;
+            .mobile-header {
+                display: flex;
+
+                position: sticky;
+
+                top: 0;
+
+                z-index: 100;
+
+                background: #111;
+
+                padding: 15px;
+
+                justify-content: space-between;
+
+                align-items: center;
+
+                border-bottom: 1px solid #292929;
+            }
+
+            .main {
+                margin-left: 0;
+
+                padding: 20px;
             }
 
             .form-grid {
                 grid-template-columns: 1fr;
             }
 
-            .form-group.full {
+            .full {
                 grid-column: auto;
-            }
-
-            .member {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .section-title {
-                flex-direction: column;
-                align-items: flex-start;
             }
 
         }
@@ -294,316 +421,813 @@
 <body>
 
 
-<nav>
+<!-- MOBILE HEADER -->
+
+<div class="mobile-header">
 
     <div class="logo">
         AV <span>FITNESS</span>
     </div>
 
-    <button id="logoutButton">
+    <button
+        class="secondary"
+        onclick="logout()"
+    >
         Logout
     </button>
-
-</nav>
-
-
-<div id="loadingScreen" class="loading">
-
-    Checking administrator access...
 
 </div>
 
 
-<main id="adminPage" class="hidden">
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
 
 
-    <!-- HEADER -->
-
-    <div class="welcome">
-
-        <h1>
-            Admin Dashboard
-        </h1>
-
-        <p>
-            Manage AV Fitness
-        </p>
-
+    <div class="logo">
+        AV <span>FITNESS</span>
     </div>
 
 
-    <!-- STATISTICS -->
-
-    <div class="stats">
-
-
-        <div class="stat">
-
-            <div class="stat-title">
-                Total Members
-            </div>
-
-            <div
-                class="stat-number"
-                id="totalMembers"
-            >
-                0
-            </div>
-
-        </div>
+    <button
+        class="nav-button active"
+        onclick="showPage('dashboard', this)"
+    >
+        📊 Dashboard
+    </button>
 
 
-        <div class="stat">
-
-            <div class="stat-title">
-                Active Members
-            </div>
-
-            <div
-                class="stat-number"
-                id="activeMembers"
-            >
-                0
-            </div>
-
-        </div>
+    <button
+        class="nav-button"
+        onclick="showPage('members', this)"
+    >
+        👥 Members
+    </button>
 
 
-        <div class="stat">
-
-            <div class="stat-title">
-                Total Payments
-            </div>
-
-            <div
-                class="stat-number"
-                id="totalPayments"
-            >
-                0
-            </div>
-
-        </div>
+    <button
+        class="nav-button"
+        onclick="showPage('billing', this)"
+    >
+        💳 Billing
+    </button>
 
 
-    </div>
+    <button
+        class="nav-button"
+        onclick="showPage('payments', this)"
+    >
+        🧾 Payments & Invoices
+    </button>
 
 
-    <!-- MEMBERS -->
-
-    <section class="section">
-
-
-        <div class="section-title">
-
-            <h2>
-                👥 Members
-            </h2>
-
-        </div>
+    <button
+        class="nav-button"
+        onclick="showPage('trainers', this)"
+    >
+        🏋️ Trainers
+    </button>
 
 
-        <div id="memberList">
+    <button
+        class="nav-button"
+        onclick="showPage('attendance', this)"
+    >
+        📅 Attendance
+    </button>
+
+
+    <button
+        class="nav-button"
+        onclick="showPage('settings', this)"
+    >
+        ⚙️ Settings
+    </button>
+
+
+    <button
+        class="nav-button logout"
+        onclick="logout()"
+    >
+        🚪 Logout
+    </button>
+
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+
+    <!-- DASHBOARD -->
+
+    <section
+        id="dashboard"
+        class="page active"
+    >
+
+        <div class="page-header">
+
+            <h1>
+                Dashboard
+            </h1>
 
             <p>
-                Loading members...
+                Welcome to AV Fitness administration.
             </p>
 
         </div>
 
+
+        <div class="stats">
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Total Members
+                </div>
+
+                <div class="card-value">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Active Members
+                </div>
+
+                <div class="card-value">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Today's Attendance
+                </div>
+
+                <div class="card-value">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Monthly Revenue
+                </div>
+
+                <div class="card-value">
+                    ₹0
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <h2>
+                    Quick Actions
+                </h2>
+
+            </div>
+
+
+            <button
+                class="primary"
+                onclick="showPageById('billing')"
+            >
+                + New Membership
+            </button>
+
+
+            <button
+                class="secondary"
+                onclick="showPageById('members')"
+            >
+                View Members
+            </button>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- MEMBERS -->
+
+    <section
+        id="members"
+        class="page"
+    >
+
+        <div class="page-header">
+
+            <h1>
+                Members
+            </h1>
+
+            <p>
+                Manage all AV Fitness members.
+            </p>
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <h2>
+                    All Members
+                </h2>
+
+                <button
+                    class="primary"
+                    onclick="openAddMember()"
+                >
+                    + Add Member
+                </button>
+
+            </div>
+
+
+            <input
+                type="search"
+                placeholder="Search members..."
+                id="memberSearch"
+            >
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Name
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Phone
+                            </th>
+
+                            <th>
+                                Package
+                            </th>
+
+                            <th>
+                                Expiry
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td colspan="6">
+
+                                <div class="empty">
+                                    Members will appear here.
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <h2>
+                    Import Existing Members
+                </h2>
+
+            </div>
+
+
+            <p class="empty">
+
+                Import the gym's existing member
+                records from CSV or Excel.
+
+                <br><br>
+
+                The system will preview and validate
+                the records before importing them.
+
+            </p>
+
+
+            <button class="secondary">
+                Choose File
+            </button>
+
+        </div>
 
     </section>
 
 
     <!-- BILLING -->
 
-    <section class="section">
+    <section
+        id="billing"
+        class="page"
+    >
 
+        <div class="page-header">
 
-        <div class="section-title">
+            <h1>
+                Billing
+            </h1>
 
-            <h2>
-                💳 New Membership
-            </h2>
+            <p>
+                Create memberships and generate invoices.
+            </p>
 
         </div>
 
 
-        <form id="membershipForm">
+        <div class="section">
+
+            <div class="section-header">
+
+                <h2>
+                    New Membership
+                </h2>
+
+            </div>
+
+
+            <form>
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Member Name
+                        </label>
+
+                        <input
+                            type="text"
+                            placeholder="Enter member name"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            placeholder="Enter email"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Phone
+                        </label>
+
+                        <input
+                            type="tel"
+                            placeholder="Enter phone number"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Membership
+                        </label>
+
+                        <select>
+
+                            <option>
+                                Monthly — ₹1,499
+                            </option>
+
+                            <option>
+                                Quarterly — ₹2,999
+                            </option>
+
+                            <option>
+                                Annual — ₹6,999
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Payment Method
+                        </label>
+
+                        <select>
+
+                            <option>
+                                UPI
+                            </option>
+
+                            <option>
+                                Cash
+                            </option>
+
+                            <option>
+                                Card
+                            </option>
+
+                            <option>
+                                Bank Transfer
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Amount
+                        </label>
+
+                        <input
+                            type="number"
+                            placeholder="₹"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label>
+                            Notes
+                        </label>
+
+                        <textarea
+                            placeholder="Optional notes..."
+                        ></textarea>
+
+                    </div>
+
+
+                </div>
+
+
+                <br>
+
+
+                <button
+                    type="button"
+                    class="primary"
+                >
+                    Create Membership & Generate Invoice
+                </button>
+
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+    <!-- PAYMENTS -->
+
+    <section
+        id="payments"
+        class="page"
+    >
+
+        <div class="page-header">
+
+            <h1>
+                Payments & Invoices
+            </h1>
+
+            <p>
+                View payment history and invoices.
+            </p>
+
+        </div>
+
+
+        <div class="section">
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Invoice
+                            </th>
+
+                            <th>
+                                Member
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Method
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td colspan="6">
+
+                                <div class="empty">
+                                    No payments yet.
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- TRAINERS -->
+
+    <section
+        id="trainers"
+        class="page"
+    >
+
+        <div class="page-header">
+
+            <h1>
+                Trainers
+            </h1>
+
+            <p>
+                Manage personal trainers and assignments.
+            </p>
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <h2>
+                    Personal Trainers
+                </h2>
+
+                <button
+                    class="primary"
+                >
+                    + Add Trainer
+                </button>
+
+            </div>
+
+
+            <div class="empty">
+
+                Trainer management will appear here.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ATTENDANCE -->
+
+    <section
+        id="attendance"
+        class="page"
+    >
+
+        <div class="page-header">
+
+            <h1>
+                Attendance
+            </h1>
+
+            <p>
+                Monitor gym attendance and connect the
+                fingerprint device.
+            </p>
+
+        </div>
+
+
+        <div class="stats">
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Today's Attendance
+                </div>
+
+                <div class="card-value">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Currently In Gym
+                </div>
+
+                <div class="card-value">
+                    0
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="section">
+
+            <h2>
+                Fingerprint Device
+            </h2>
+
+            <p class="empty">
+
+                Device integration will be connected here.
+
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- SETTINGS -->
+
+    <section
+        id="settings"
+        class="page"
+    >
+
+        <div class="page-header">
+
+            <h1>
+                Settings
+            </h1>
+
+            <p>
+                AV Fitness gym settings.
+            </p>
+
+        </div>
+
+
+        <div class="section">
 
 
             <div class="form-grid">
 
 
-                <!-- NAME -->
-
                 <div class="form-group">
 
-                    <label for="memberName">
-                        Member Name
+                    <label>
+                        Gym Name
                     </label>
 
                     <input
-                        id="memberName"
-                        type="text"
-                        placeholder="Enter member name"
-                        required
+                        value="AV Fitness"
                     >
 
                 </div>
 
-
-                <!-- EMAIL -->
-
-                <div class="form-group">
-
-                    <label for="memberEmail">
-                        Email
-                    </label>
-
-                    <input
-                        id="memberEmail"
-                        type="email"
-                        placeholder="Enter email"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- PHONE -->
-
-                <div class="form-group">
-
-                    <label for="memberPhone">
-                        Phone
-                    </label>
-
-                    <input
-                        id="memberPhone"
-                        type="tel"
-                        placeholder="Enter phone number"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- PACKAGE -->
-
-                <div class="form-group">
-
-                    <label for="membershipType">
-                        Membership Package
-                    </label>
-
-                    <select
-                        id="membershipType"
-                        required
-                    >
-
-                        <option value="">
-                            Select package
-                        </option>
-
-                        <option
-                            value="Monthly"
-                            data-price="1499"
-                            data-months="1"
-                        >
-                            Monthly — ₹1,499
-                        </option>
-
-                        <option
-                            value="Quarterly"
-                            data-price="2999"
-                            data-months="3"
-                        >
-                            Quarterly — ₹2,999
-                        </option>
-
-                        <option
-                            value="Annual"
-                            data-price="6999"
-                            data-months="12"
-                        >
-                            Annual — ₹6,999
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- PAYMENT METHOD -->
-
-                <div class="form-group">
-
-                    <label for="paymentMethod">
-                        Payment Method
-                    </label>
-
-                    <select
-                        id="paymentMethod"
-                        required
-                    >
-
-                        <option value="">
-                            Select payment method
-                        </option>
-
-                        <option value="UPI">
-                            UPI
-                        </option>
-
-                        <option value="Cash">
-                            Cash
-                        </option>
-
-                        <option value="Card">
-                            Card
-                        </option>
-
-                        <option value="Bank Transfer">
-                            Bank Transfer
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- AMOUNT -->
 
                 <div class="form-group">
 
                     <label>
-                        Amount
+                        Location
                     </label>
 
-                    <div
-                        class="amount-box"
-                        id="amountDisplay"
+                    <input
+                        value="Chennai"
                     >
-                        ₹0
-                    </div>
 
                 </div>
 
 
-                <!-- FORM BUTTON -->
+                <div class="form-group">
 
-                <div class="form-group full">
+                    <label>
+                        Phone
+                    </label>
 
-                    <div class="form-actions">
+                    <input
+                        value="9999999999"
+                    >
 
-                        <button
-                            type="submit"
-                            id="createMembershipButton"
-                        >
-                            Create Membership
-                        </button>
+                </div>
 
-                    </div>
+
+                <div class="form-group">
+
+                    <label>
+                        Tagline
+                    </label>
+
+                    <input
+                        value="Get Fit Don't Quit"
+                    >
 
                 </div>
 
@@ -611,43 +1235,7 @@
             </div>
 
 
-            <p
-                id="billingMessage"
-                class="message"
-            ></p>
-
-
-        </form>
-
-
-    </section>
-
-
-    <!-- TRAINERS -->
-
-    <section class="section">
-
-
-        <div class="section-title">
-
-            <h2>
-                🏋️ Trainers
-            </h2>
-
-            <button
-                type="button"
-                id="trainerButton"
-            >
-                Manage Trainers
-            </button>
-
         </div>
-
-
-        <p class="member-details">
-            Trainer management will be added next.
-        </p>
-
 
     </section>
 
@@ -658,550 +1246,156 @@
 <script>
 
 
-/* =====================================================
-   SUPABASE CONFIGURATION
-   ===================================================== */
+/* PAGE NAVIGATION */
 
 
-const SUPABASE_URL =
-    "https://hwcvzgnldnnvpzqaprmr.supabase.co";
+function showPage(
+    pageId,
+    button
+) {
 
 
-const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable__p2vDp05-aQKlAjGbp8vqw_7c9fyHtK";
-
-
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-    );
-
-
-/* =====================================================
-   ELEMENTS
-   ===================================================== */
-
-
-const loadingScreen =
-    document.getElementById(
-        "loadingScreen"
-    );
-
-
-const adminPage =
-    document.getElementById(
-        "adminPage"
-    );
-
-
-const logoutButton =
-    document.getElementById(
-        "logoutButton"
-    );
-
-
-const memberList =
-    document.getElementById(
-        "memberList"
-    );
-
-
-const totalMembers =
-    document.getElementById(
-        "totalMembers"
-    );
-
-
-const activeMembers =
-    document.getElementById(
-        "activeMembers"
-    );
-
-
-const totalPayments =
-    document.getElementById(
-        "totalPayments"
-    );
-
-
-const membershipForm =
-    document.getElementById(
-        "membershipForm"
-    );
-
-
-const membershipType =
-    document.getElementById(
-        "membershipType"
-    );
-
-
-const amountDisplay =
-    document.getElementById(
-        "amountDisplay"
-    );
-
-
-const billingMessage =
-    document.getElementById(
-        "billingMessage"
-    );
-
-
-/* =====================================================
-   CHECK ADMIN
-   ===================================================== */
-
-
-async function checkAdmin() {
-
-
-    const {
-        data: sessionData
-    } =
-        await supabaseClient.auth
-            .getSession();
-
-
-    const session =
-        sessionData.session;
-
-
-    if (!session) {
-
-        window.location.href =
-            "login.html";
-
-        return false;
-    }
-
-
-    const user =
-        session.user;
-
-
-    const {
-        data: roleData,
-        error: roleError
-    } =
-        await supabaseClient
-            .from("user_roles")
-            .select("role")
-            .eq(
-                "user_id",
-                user.id
-            )
-            .eq(
-                "role",
-                "admin"
-            )
-            .maybeSingle();
-
-
-    if (roleError) {
-
-        console.error(
-            "Admin role error:",
-            roleError
+    const pages =
+        document.querySelectorAll(
+            ".page"
         );
 
-        loadingScreen.textContent =
-            "Unable to verify administrator access.";
 
-        return false;
-    }
+    pages.forEach(
+        page => {
 
-
-    if (!roleData) {
-
-        loadingScreen.textContent =
-            "Access denied.";
-
-        return false;
-    }
-
-
-    return true;
-
-}
-
-
-/* =====================================================
-   LOAD MEMBERS
-   ===================================================== */
-
-
-async function loadMembers() {
-
-
-    const {
-        data: members,
-        error
-    } =
-        await supabaseClient
-            .from("members")
-            .select(
-                `
-                member_id,
-                name,
-                email,
-                phone,
-                membership_type,
-                membership_end
-                `
-            )
-            .order(
-                "member_id",
-                {
-                    ascending: false
-                }
+            page.classList.remove(
+                "active"
             );
 
-
-    if (error) {
-
-        console.error(
-            "Members error:",
-            error
-        );
-
-        memberList.innerHTML =
-            "<p>Unable to load members.</p>";
-
-        return;
-    }
-
-
-    totalMembers.textContent =
-        members.length;
-
-
-    const today =
-        new Date();
-
-
-    const active =
-        members.filter(
-            member =>
-                member.membership_end &&
-                new Date(
-                    member.membership_end
-                ) >= today
-        );
-
-
-    activeMembers.textContent =
-        active.length;
-
-
-    if (members.length === 0) {
-
-        memberList.innerHTML =
-            "<p>No members yet.</p>";
-
-        return;
-    }
-
-
-    memberList.innerHTML =
-        members.map(
-            member => {
-
-
-                const isActive =
-                    member.membership_end &&
-                    new Date(
-                        member.membership_end
-                    ) >= today;
-
-
-                return `
-
-                    <div class="member">
-
-                        <div>
-
-                            <div class="member-name">
-                                ${escapeHTML(
-                                    member.name
-                                )}
-                            </div>
-
-                            <div class="member-details">
-
-                                ${escapeHTML(
-                                    member.email || ""
-                                )}
-
-                                <br>
-
-                                ${escapeHTML(
-                                    member.phone || ""
-                                )}
-
-                                <br>
-
-                                Package:
-                                ${escapeHTML(
-                                    member.membership_type || "N/A"
-                                )}
-
-                                <br>
-
-                                Expires:
-                                ${member.membership_end || "N/A"}
-
-                            </div>
-
-                        </div>
-
-                        <div class="${
-                            isActive
-                                ? "active"
-                                : "expired"
-                        }">
-
-                            ${
-                                isActive
-                                    ? "● Active"
-                                    : "● Expired"
-                            }
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            }
-        ).join("");
-
-}
-
-
-/* =====================================================
-   LOAD PAYMENT COUNT
-   ===================================================== */
-
-
-async function loadPaymentCount() {
-
-
-    const {
-        count,
-        error
-    } =
-        await supabaseClient
-            .from("payments")
-            .select(
-                "payment_id",
-                {
-                    count: "exact",
-                    head: true
-                }
-            );
-
-
-    if (error) {
-
-        console.error(
-            "Payments error:",
-            error
-        );
-
-        totalPayments.textContent =
-            "—";
-
-        return;
-    }
-
-
-    totalPayments.textContent =
-        count || 0;
-
-}
-
-
-/* =====================================================
-   PACKAGE PRICE
-   ===================================================== */
-
-
-membershipType.addEventListener(
-    "change",
-    function() {
-
-
-        const option =
-            membershipType.options[
-                membershipType.selectedIndex
-            ];
-
-
-        const price =
-            option.dataset.price;
-
-
-        amountDisplay.textContent =
-            price
-                ? "₹" +
-                  Number(price)
-                    .toLocaleString("en-IN")
-                : "₹0";
-
-    }
-);
-
-
-/* =====================================================
-   MEMBERSHIP FORM
-   ===================================================== */
-
-
-membershipForm.addEventListener(
-    "submit",
-    async function(event) {
-
-
-        event.preventDefault();
-
-
-        const name =
-            document.getElementById(
-                "memberName"
-            ).value.trim();
-
-
-        const email =
-            document.getElementById(
-                "memberEmail"
-            ).value.trim();
-
-
-        const phone =
-            document.getElementById(
-                "memberPhone"
-            ).value.trim();
-
-
-        const packageOption =
-            membershipType.options[
-                membershipType.selectedIndex
-            ];
-
-
-        const packageName =
-            packageOption.value;
-
-
-        const amount =
-            Number(
-                packageOption.dataset.price
-            );
-
-
-        const paymentMethod =
-            document.getElementById(
-                "paymentMethod"
-            ).value;
-
-
-        if (
-            !name ||
-            !email ||
-            !phone ||
-            !packageName ||
-            !amount ||
-            !paymentMethod
-        ) {
-
-            billingMessage.textContent =
-                "Please fill in all fields.";
-
-            return;
         }
-
-
-        billingMessage.textContent =
-            "Form validated successfully. Database creation will be connected next.";
-
-    }
-);
-
-
-/* =====================================================
-   LOGOUT
-   ===================================================== */
-
-
-logoutButton.addEventListener(
-    "click",
-    async function() {
-
-
-        await supabaseClient.auth.signOut();
-
-
-        window.location.href =
-            "login.html";
-
-    }
-);
-
-
-/* =====================================================
-   HTML SAFETY
-   ===================================================== */
-
-
-function escapeHTML(value) {
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
-}
-
-
-/* =====================================================
-   START
-   ===================================================== */
-
-
-async function startAdmin() {
-
-
-    const isAdmin =
-        await checkAdmin();
-
-
-    if (!isAdmin) {
-        return;
-    }
-
-
-    loadingScreen.style.display =
-        "none";
-
-
-    adminPage.classList.remove(
-        "hidden"
     );
 
 
-    await loadMembers();
+    const selectedPage =
+        document.getElementById(
+            pageId
+        );
 
 
-    await loadPaymentCount();
+    if (selectedPage) {
+
+        selectedPage.classList.add(
+            "active"
+        );
+
+    }
+
+
+    const buttons =
+        document.querySelectorAll(
+            ".nav-button"
+        );
+
+
+    buttons.forEach(
+        navButton => {
+
+            navButton.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
+
+    if (button) {
+
+        button.classList.add(
+            "active"
+        );
+
+    }
 
 }
 
 
-startAdmin();
+/* QUICK ACTION NAVIGATION */
+
+
+function showPageById(
+    pageId
+) {
+
+
+    const pages =
+        document.querySelectorAll(
+            ".page"
+        );
+
+
+    pages.forEach(
+        page => {
+
+            page.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
+
+    const page =
+        document.getElementById(
+            pageId
+        );
+
+
+    if (page) {
+
+        page.classList.add(
+            "active"
+        );
+
+    }
+
+
+    const buttons =
+        document.querySelectorAll(
+            ".nav-button"
+        );
+
+
+    buttons.forEach(
+        button => {
+
+            button.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
+}
+
+
+/* PLACEHOLDER */
+
+
+function openAddMember() {
+
+    showPageById(
+        "billing"
+    );
+
+}
+
+
+/* LOGOUT PLACEHOLDER */
+
+
+function logout() {
+
+    alert(
+        "Logout will be connected after the new Admin interface is tested."
+    );
+
+}
 
 
 </script>
