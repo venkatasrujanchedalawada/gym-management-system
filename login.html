@@ -1,461 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MJ Fitness | Login</title>
 
-    <meta charset="UTF-8">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<style>
+:root{
+    --yellow:#ffd400;
+    --yellow-hover:#ffe45c;
+    --black:#070707;
+    --panel:#121212;
+    --card:#171717;
+    --border:#2a2a2a;
+    --muted:#999;
+    --white:#fff;
+    --danger:#ff6b6b;
+    --success:#8ee28e;
+}
 
-    <title>AV Fitness | Login</title>
+*{box-sizing:border-box;margin:0;padding:0}
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+body{
+    min-height:100vh;
+    font-family:Arial,Helvetica,sans-serif;
+    color:var(--white);
+    background:
+        radial-gradient(circle at 50% 35%,rgba(255,212,0,.12),transparent 32%),
+        linear-gradient(135deg,#151515 0%,var(--black) 65%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+}
 
-    <style>
+.login-page{
+    width:100%;
+    max-width:440px;
+}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
+.brand{
+    text-align:center;
+    margin-bottom:22px;
+}
 
-        body {
-            min-height: 100vh;
-            background: #0b0b0b;
-            color: white;
+.brand-name{
+    font-size:32px;
+    font-weight:950;
+    letter-spacing:-1px;
+}
 
-            display: flex;
-            justify-content: center;
-            align-items: center;
+.brand-name span{color:var(--yellow)}
 
-            padding: 20px;
-        }
+.tagline{
+    color:#888;
+    font-size:14px;
+    margin-top:5px;
+}
 
-        .login-box {
-            width: 100%;
-            max-width: 420px;
+.login-card{
+    background:rgba(23,23,23,.96);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:34px;
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+}
 
-            background: #151515;
-            border: 1px solid #292929;
+.login-card h1{
+    text-align:center;
+    font-size:27px;
+    margin-bottom:7px;
+}
 
-            border-radius: 15px;
+.subtitle{
+    text-align:center;
+    color:var(--muted);
+    margin-bottom:28px;
+    font-size:15px;
+}
 
-            padding: 35px;
-        }
+.field{margin-bottom:18px}
 
-        .logo {
-            text-align: center;
-            font-size: 30px;
-            font-weight: bold;
+label{
+    display:block;
+    margin-bottom:8px;
+    color:#ddd;
+    font-size:14px;
+    font-weight:700;
+}
 
-            margin-bottom: 10px;
-        }
+input{
+    width:100%;
+    padding:14px;
+    border:1px solid #333;
+    border-radius:8px;
+    background:#0b0b0b;
+    color:#fff;
+    outline:none;
+    font-size:15px;
+    transition:.2s;
+}
 
-        .logo span {
-            color: #ff3b30;
-        }
+input:focus{
+    border-color:var(--yellow);
+    box-shadow:0 0 0 2px rgba(255,212,0,.08);
+}
 
-        .subtitle {
-            text-align: center;
-            color: #999;
+input::placeholder{color:#666}
 
-            margin-bottom: 30px;
-        }
+.login-button{
+    width:100%;
+    padding:14px;
+    border:0;
+    border-radius:8px;
+    background:var(--yellow);
+    color:#050505;
+    font-size:16px;
+    font-weight:900;
+    cursor:pointer;
+    transition:.2s;
+    margin-top:4px;
+}
 
-        label {
-            display: block;
+.login-button:hover{background:var(--yellow-hover);transform:translateY(-1px)}
 
-            margin-bottom: 8px;
+.login-button:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+    transform:none;
+}
 
-            color: #ccc;
-            font-size: 14px;
-        }
+#message{
+    min-height:22px;
+    text-align:center;
+    margin-top:17px;
+    font-size:14px;
+    color:var(--muted);
+}
 
-        input {
-            width: 100%;
+#message.error{color:var(--danger)}
+#message.success{color:var(--success)}
 
-            padding: 13px;
+.back{
+    display:block;
+    text-align:center;
+    margin-top:22px;
+    color:#999;
+    text-decoration:none;
+    font-size:14px;
+}
 
-            margin-bottom: 20px;
+.back:hover{color:var(--yellow)}
 
-            background: #0d0d0d;
-            color: white;
+.footer{
+    text-align:center;
+    color:#555;
+    font-size:12px;
+    margin-top:20px;
+}
 
-            border: 1px solid #333;
-            border-radius: 7px;
-
-            outline: none;
-        }
-
-        input:focus {
-            border-color: #ff3b30;
-        }
-
-        button {
-            width: 100%;
-
-            padding: 14px;
-
-            border: none;
-            border-radius: 7px;
-
-            background: #ff3b30;
-            color: white;
-
-            font-size: 16px;
-            font-weight: bold;
-
-            cursor: pointer;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        #message {
-            text-align: center;
-
-            margin-top: 18px;
-
-            color: #aaa;
-
-            min-height: 20px;
-        }
-
-        .back {
-            display: block;
-
-            text-align: center;
-
-            margin-top: 25px;
-
-            color: #aaa;
-            text-decoration: none;
-        }
-
-        .back:hover {
-            color: white;
-        }
-
-    </style>
-
+@media(max-width:480px){
+    body{padding:16px}
+    .login-card{padding:26px 20px}
+    .brand-name{font-size:28px}
+}
+</style>
 </head>
-
 
 <body>
 
+<main class="login-page">
 
-<div class="login-box">
-
-    <div class="logo">
-        AV <span>FITNESS</span>
+    <div class="brand">
+        <div class="brand-name">MJ <span>FITNESS</span></div>
+        <div class="tagline">Get Fit. Don't Quit.</div>
     </div>
 
-    <p class="subtitle">
-        Member & Admin Login
-    </p>
+    <section class="login-card">
 
+        <h1>Welcome Back</h1>
 
-    <form id="loginForm">
+        <p class="subtitle">
+            Member &amp; Admin Login
+        </p>
 
-        <label for="email">
-            Email
-        </label>
+        <form id="loginForm">
 
-        <input
-            type="email"
-            id="email"
-            placeholder="Enter your email"
-            required
-        >
+            <div class="field">
+                <label for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+            </div>
 
+            <div class="field">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
 
-        <label for="password">
-            Password
-        </label>
+            <button
+                type="submit"
+                id="loginButton"
+                class="login-button"
+            >
+                Login
+            </button>
 
-        <input
-            type="password"
-            id="password"
-            placeholder="Enter your password"
-            required
-        >
+        </form>
 
+        <p id="message" aria-live="polite"></p>
 
-        <button
-            type="submit"
-            id="loginButton"
-        >
-            Login
-        </button>
+    </section>
 
-    </form>
-
-
-    <p id="message"></p>
-
-
-    <a
-        href="index.html"
-        class="back"
-    >
-        ← Back to AV Fitness
+    <a href="index.html" class="back">
+        ← Back to MJ Fitness
     </a>
 
-</div>
+    <div class="footer">
+        © 2026 MJ Fitness
+    </div>
 
+</main>
 
 <script>
-
-
-/* =====================================================
-   SUPABASE CONFIGURATION
-   ===================================================== */
-
-
 /*
-   IMPORTANT:
+    IMPORTANT:
+    Replace these with the SAME Supabase URL and
+    publishable/anon key used by your working project.
 
-   Put the SAME Supabase URL and
-   PUBLISHABLE/ANON KEY that you
-   were already using.
-
-   Do NOT use the service_role key.
+    Never put the Supabase service-role/secret key here.
 */
-
-
-const SUPABASE_URL =
-    "https://hwcvzgnldnnvpzqaprmr.supabase.co";
-
-
-const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable__p2vDp05-aQKlAjGbp8vqw_7c9fyHtK";
-
-
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-    );
-
-
-/* =====================================================
-   LOGIN
-   ===================================================== */
-
-
-const loginForm =
-    document.getElementById("loginForm");
-
-
-const emailInput =
-    document.getElementById("email");
-
-
-const passwordInput =
-    document.getElementById("password");
-
-
-const loginButton =
-    document.getElementById("loginButton");
-
-
-const message =
-    document.getElementById("message");
-
-
-loginForm.addEventListener(
-    "submit",
-    async function(event) {
-
-        event.preventDefault();
-
-
-        const email =
-            emailInput.value.trim();
-
-
-        const password =
-            passwordInput.value;
-
-
-        if (!email || !password) {
-
-            message.textContent =
-                "Please enter your email and password.";
-
-            return;
-        }
-
-
-        loginButton.disabled = true;
-
-        message.textContent =
-            "Logging in...";
-
-
-        /* ---------------------------------------------
-           STEP 1 — AUTHENTICATE
-           --------------------------------------------- */
-
-
-        const {
-            data: authData,
-            error: authError
-        } =
-            await supabaseClient.auth
-                .signInWithPassword({
-
-                    email: email,
-
-                    password: password
-
-                });
-
-
-        if (authError) {
-
-            console.error(
-                "LOGIN ERROR:",
-                authError
-            );
-
-
-            message.textContent =
-                "Login failed: " +
-                authError.message;
-
-
-            loginButton.disabled = false;
-
-            return;
-        }
-
-
-        if (!authData.user) {
-
-            message.textContent =
-                "Login failed. User not found.";
-
-            loginButton.disabled = false;
-
-            return;
-        }
-
-
-        console.log(
-            "Authenticated user:",
-            authData.user.id
-        );
-
-
-        /* ---------------------------------------------
-           STEP 2 — CHECK ROLE
-           --------------------------------------------- */
-
-
-        message.textContent =
-            "Checking account type...";
-
-
-        const {
-            data: roleData,
-            error: roleError
-        } =
-            await supabaseClient
-                .from("user_roles")
-                .select("role")
-                .eq(
-                    "user_id",
-                    authData.user.id
-                )
-                .maybeSingle();
-
-
-        if (roleError) {
-
-            console.error(
-                "ROLE ERROR:",
-                roleError
-            );
-
-
-            /*
-               We don't want to leave the
-               user logged in if role checking
-               fails.
-            */
-
-            await supabaseClient.auth.signOut();
-
-
-            message.textContent =
-                "Unable to verify account type: " +
-                roleError.message;
-
-
-            loginButton.disabled = false;
-
-            return;
-        }
-
-
-        console.log(
-            "Account role:",
-            roleData
-        );
-
-
-        /* ---------------------------------------------
-           STEP 3 — REDIRECT
-           --------------------------------------------- */
-
-
-        if (
-            roleData &&
-            roleData.role === "admin"
-        ) {
-
-            message.textContent =
-                "Admin account detected...";
-
-
-            window.location.href =
-                "admin.html";
-
-
-            return;
-        }
-
-
-        /*
-           If the user isn't an admin,
-           send them to the member dashboard.
-        */
-
-
-        message.textContent =
-            "Member account detected...";
-
-
-        window.location.href =
-            "dashboard.html";
-
-    }
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
 );
 
+const form = document.getElementById("loginForm");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginButton = document.getElementById("loginButton");
+const message = document.getElementById("message");
 
+function showMessage(text, type=""){
+    message.textContent = text;
+    message.className = type;
+}
+
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if(!email || !password){
+        showMessage("Please enter your email and password.", "error");
+        return;
+    }
+
+    loginButton.disabled = true;
+    loginButton.textContent = "Logging in...";
+    showMessage("");
+
+    try{
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if(error) throw error;
+
+        showMessage("Login successful. Redirecting...", "success");
+
+        /*
+          Keep the redirect simple. The existing admin/member
+          authorization logic can decide what the user sees.
+        */
+        setTimeout(() => {
+            window.location.href = "admin.html";
+        }, 500);
+
+    }catch(error){
+        console.error("Login error:", error);
+
+        let text = error?.message || "Unable to log in.";
+
+        if(text.toLowerCase().includes("invalid login credentials")){
+            text = "Incorrect email or password.";
+        }
+
+        showMessage(text, "error");
+
+        loginButton.disabled = false;
+        loginButton.textContent = "Login";
+    }
+});
 </script>
 
-
 </body>
-
 </html>
