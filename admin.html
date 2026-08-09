@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AV Fitness | Admin</title>
+<title>MJ Fitness | Admin</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -54,7 +54,7 @@ input,select,textarea{width:100%;padding:12px;background:#0d0d0d;color:#fff;bord
 <main class="main">
 
 <section id="dashboard" class="page active">
-  <div class="page-head"><h1>Dashboard</h1><p>AV Fitness administration</p></div>
+  <div class="page-head"><h1>Dashboard</h1><p>MJ Fitness administration</p></div>
   <div class="stats">
     <div class="card"><div class="card-title">Total Members</div><div class="card-value" id="statMembers">0</div></div>
     <div class="card"><div class="card-title">Active Members</div><div class="card-value" id="statActive">0</div></div>
@@ -179,13 +179,25 @@ input,select,textarea{width:100%;padding:12px;background:#0d0d0d;color:#fff;bord
 </section>
 
 <section id="settings" class="page">
-  <div class="page-head"><h1>Settings</h1><p>AV Fitness settings.</p></div>
+  <div class="page-head"><h1>Settings</h1><p>MJ Fitness settings.</p></div>
   <div class="panel">
     <div class="form-grid">
-      <div class="form-group"><label>Gym Name</label><input value="AV Fitness" readonly></div>
+      <div class="form-group"><label>Gym Name</label><input value="MJ Fitness" readonly></div>
       <div class="form-group"><label>Location</label><input value="Chennai, Tamil Nadu" readonly></div>
       <div class="form-group"><label>Phone</label><input value="9999999999" readonly></div>
       <div class="form-group"><label>Tagline</label><input value="Get Fit. Don't Quit." readonly></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Membership Plans</h2><button class="primary" onclick="savePlanPrices()">Save Prices</button></div>
+    <p class="muted" style="margin-bottom:16px">Change a plan price here and the public website will automatically show the new price.</p>
+    <div class="form-grid">
+      <div class="form-group"><label>Monthly Price (₹)</label><input id="planMonthlyPrice" type="number" min="0" step="1"></div>
+      <div class="form-group"><label>Monthly Days</label><input id="planMonthlyDays" type="number" min="1" step="1"></div>
+      <div class="form-group"><label>Quarterly Price (₹)</label><input id="planQuarterlyPrice" type="number" min="0" step="1"></div>
+      <div class="form-group"><label>Quarterly Days</label><input id="planQuarterlyDays" type="number" min="1" step="1"></div>
+      <div class="form-group"><label>Annual Price (₹)</label><input id="planAnnualPrice" type="number" min="0" step="1"></div>
+      <div class="form-group"><label>Annual Days</label><input id="planAnnualDays" type="number" min="1" step="1"></div>
     </div>
   </div>
 </section>
@@ -229,11 +241,11 @@ input,select,textarea{width:100%;padding:12px;background:#0d0d0d;color:#fff;bord
 <div id="toast" class="toast"></div>
 
 <script>
-const SUPABASE_URL = "https://hwcvzgnldnnvpzqaprmr.supabase.co";
-const SUPABASE_KEY = "sb_publishable__p2vDp05-aQKlAjGbp8vqw_7c9fyHtK";
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const PACKAGE_PRICES = { Monthly:1499, Quarterly:2999, Annual:6999 };
+let membershipPlans = [];
 let members=[], trainers=[];
 
 const $ = id => document.getElementById(id);
@@ -321,9 +333,88 @@ function updateBillEndDate(){
   }
 }
 
+
+function getPlan(name){
+  return membershipPlans.find(p => p.name === name);
+}
+
+function populatePlanSelect(){
+  const select = $("billPackage");
+  const current = select.value;
+  select.innerHTML = membershipPlans.map(p =>
+    `<option value="${esc(p.name)}">${esc(p.name)}</option>`
+  ).join("") + `<option value="Custom">Custom</option>`;
+  if([...select.options].some(o => o.value === current)) select.value = current;
+}
+
+async function loadMembershipPlans(){
+  const {data,error} = await supabaseClient
+    .from("membership_plans")
+    .select("plan_id,name,duration_days,price,is_active")
+    .eq("is_active",true)
+    .order("plan_id",{ascending:true});
+
+  if(error){
+    console.error("Membership plans:", error);
+    toast("Unable to load membership plans");
+    return;
+  }
+
+  membershipPlans = data || [];
+  populatePlanSelect();
+
+  const map = Object.fromEntries(membershipPlans.map(p => [p.name,p]));
+  $("planMonthlyPrice").value = map.Monthly?.price ?? "";
+  $("planMonthlyDays").value = map.Monthly?.duration_days ?? "";
+  $("planQuarterlyPrice").value = map.Quarterly?.price ?? "";
+  $("planQuarterlyDays").value = map.Quarterly?.duration_days ?? "";
+  $("planAnnualPrice").value = map.Annual?.price ?? "";
+  $("planAnnualDays").value = map.Annual?.duration_days ?? "";
+
+  updateBillReference();
+}
+
+async function savePlanPrices(){
+  const values = [
+    ["Monthly", $("planMonthlyPrice").value, $("planMonthlyDays").value],
+    ["Quarterly", $("planQuarterlyPrice").value, $("planQuarterlyDays").value],
+    ["Annual", $("planAnnualPrice").value, $("planAnnualDays").value]
+  ];
+
+  for(const [name,price,days] of values){
+    if(!Number.isFinite(Number(price)) || Number(price) < 0 ||
+       !Number.isInteger(Number(days)) || Number(days) < 1){
+      toast(`Check ${name} plan values`);
+      return;
+    }
+  }
+
+  const {error} = await supabaseClient
+    .from("membership_plans")
+    .upsert(
+      values.map(([name,price,days]) => ({
+        name,
+        price:Number(price),
+        duration_days:Number(days),
+        is_active:true
+      })),
+      {onConflict:"name"}
+    );
+
+  if(error){
+    console.error("Save plans:",error);
+    toast("Unable to save membership plans");
+    return;
+  }
+
+  await loadMembershipPlans();
+  toast("Membership prices updated");
+}
+
 function updateBillReference(){
   const packageName = $("billPackage").value;
-  const reference = PACKAGE_PRICES[packageName] ?? "";
+  const plan = getPlan(packageName);
+  const reference = plan ? Number(plan.price) : "";
   $("billReference").value = reference;
 
   const discount = Number($("billDiscount").value || 0);
@@ -338,7 +429,10 @@ function updateBillReference(){
 
 $("billPackage").addEventListener("change", () => {
   delete $("billFinal").dataset.adminEdited;
+  const plan = getPlan($("billPackage").value);
+  if(plan) $("billDays").value = plan.duration_days;
   updateBillReference();
+  updateBillEndDate();
 });
 
 $("billDays").addEventListener("input", updateBillEndDate);
@@ -423,7 +517,7 @@ $("billingForm").addEventListener("submit", async e => {
     if(payError) throw new Error(`Payment: ${payError.message}`);
 
     const invoiceNumber =
-      `AVF-${new Date().getFullYear()}-${String(pay.payment_id).padStart(5,"0")}`;
+      `MJF-${new Date().getFullYear()}-${String(pay.payment_id).padStart(5,"0")}`;
 
     const invoice = {
       invoice_number: invoiceNumber,
@@ -486,7 +580,7 @@ async function loadInvoices(){
 async function printInvoice(id){
   const {data:i,error}=await supabaseClient.from("invoices").select("*,members(name,email,phone)").eq("invoice_id",id).single();
   if(error){toast("Unable to load invoice");return}
-  const w=window.open("","_blank");w.document.write(`<html><head><title>${esc(i.invoice_number)}</title><style>body{font-family:Arial;padding:40px}.box{max-width:700px;margin:auto}table{width:100%;border-collapse:collapse;margin-top:25px}td{padding:12px;border-bottom:1px solid #ddd}.total{font-weight:bold;font-size:20px}</style></head><body><div class="box"><h1>AV FITNESS</h1><p>Get Fit. Don't Quit.</p><hr><h2>INVOICE</h2><p>Invoice: ${esc(i.invoice_number)}</p><p>Date: ${esc(i.issue_date||"-")}</p><br><p><b>Member</b><br>${esc(i.members?.name||"-")}<br>${esc(i.members?.email||"")}<br>${esc(i.members?.phone||"")}</p><table><tr><td>Standard Amount</td><td>${money(i.standard_amount)}</td></tr><tr><td>Discount</td><td>${money(i.discount_amount)}</td></tr><tr class="total"><td>Amount Paid</td><td>${money(i.final_amount)}</td></tr></table><p style="margin-top:30px">Thank you for choosing AV Fitness.</p></div></body></html>`);w.document.close();w.print();
+  const w=window.open("","_blank");w.document.write(`<html><head><title>${esc(i.invoice_number)}</title><style>body{font-family:Arial;padding:40px}.box{max-width:700px;margin:auto}table{width:100%;border-collapse:collapse;margin-top:25px}td{padding:12px;border-bottom:1px solid #ddd}.total{font-weight:bold;font-size:20px}</style></head><body><div class="box"><h1>MJ FITNESS</h1><p>Get Fit. Don't Quit.</p><hr><h2>INVOICE</h2><p>Invoice: ${esc(i.invoice_number)}</p><p>Date: ${esc(i.issue_date||"-")}</p><br><p><b>Member</b><br>${esc(i.members?.name||"-")}<br>${esc(i.members?.email||"")}<br>${esc(i.members?.phone||"")}</p><table><tr><td>Standard Amount</td><td>${money(i.standard_amount)}</td></tr><tr><td>Discount</td><td>${money(i.discount_amount)}</td></tr><tr class="total"><td>Amount Paid</td><td>${money(i.final_amount)}</td></tr></table><p style="margin-top:30px">Thank you for choosing MJ Fitness.</p></div></body></html>`);w.document.close();w.print();
 }
 
 async function loadTrainers(){
@@ -566,7 +660,7 @@ async function loadDashboard(){
 async function logout(){await supabaseClient.auth.signOut();location.href="login.html"}
 async function init(){
   if(!(await requireAdmin()))return;
-  await loadMembers();await loadPayments();await loadInvoices();await loadTrainers();await loadAttendance();setBillingStartDate();updateBillReference();
+  await loadMembers();await loadMembershipPlans();await loadPayments();await loadInvoices();await loadTrainers();await loadAttendance();setBillingStartDate();updateBillReference();
 }
 init();
 </script>
